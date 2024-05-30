@@ -1,102 +1,75 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {Helmet} from 'react-helmet';
 import {Button, Form} from 'antd';
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
-import {FormItem, setLoginUser} from '@ra-lib/admin';
+import {LockOutlined, UserOutlined, MailOutlined} from '@ant-design/icons';
+import {FormItem} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
-import {useHistory} from 'react-router-dom';
-import {toHome} from 'src/commons';
 import {Logo, Proxy} from 'src/components';
-import {IS_DEV, IS_TEST, IS_PREVIEW} from 'src/config';
 import s from './style.less';
-import {encryptPassword} from 'src/utils/encryption'; //密码加密的函数
-
-// 开发模式 默认填充的用户名密码
-const formValues = {
-    account: 'admin',
-    password: 'Abc123456',
-};
+import {encryptPassword} from 'src/utils/encryption'; // 密码加密的函数
 
 export default config({
-    path: '/login',
+    path: '/register',
     auth: false,
     layout: false,
-})(function Login(props) {
+})(function Register(props) {
     const [message, setMessage] = useState();
     const [isMount, setIsMount] = useState(false);
     const [form] = Form.useForm();
-    const history = useHistory(); // 使用useHistory钩子
 
-    const login = props.ajax.usePost('/mock/login');
+    const register = props.ajax.usePost('/mock/register');
 
     const handleSubmit = useCallback(
         (values) => {
-            if (login.loading) return;
+            if (register.loading) return;
 
             const params = {
                 ...values,
-                password: values.password, // 加密密码
+                account:values.account,
+                email:values.email,
+                //password: encryptPassword(values.password), // 加密密码
+                password: values.password,
             };
-
-            alert('TODO 登录');
-            //login.run = async () => ({id: 1, name: '测试', token: 'test'});
-
-            login
+            alert('TODO 注册');
+            //register.run = async () => ({id: 1, name: '测试', token: 'test'});
+            register
                 .run(params, {errorTip: false})
                 .then((res) => {
-                   // 通过res访问实际的数据
+                    console.log(res)
                     const [status, data] = res;
-                    console.log(data)
-                    if (status === 200) {
-                        const { id, account, token, ...others } = data;
-                        var name = account
-                        setLoginUser({
-                            id, // 必须字段
-                            name, // 必须字段
-                            token,
-                            ...others,
-                            // 其他字段按需添加
-                        });
-                        toHome();
-                    } else {
-                        setMessage(data.message || '用户名或密码错误');
+                    if(status===200){
+                        alert('注册成功，请登录！');
+                        props.history.push('/login');
+                    }else if (status===400) {
+                        alert(data.message)
                     }
+                    
                 })
                 .catch((err) => {
                     console.error(err);
-                    setMessage(err.response?.data?.message || '用户名或密码错误');
+                    setMessage(err.response?.data?.message || '注册失败，请重试');
                 });
         },
-        [login],
+        [register, props.history],
     );
 
     useEffect(() => {
-        // 开发时默认填入数据
-        if (IS_DEV || IS_TEST || IS_PREVIEW) {
-            form.setFieldsValue(formValues);
-        }
-
         setTimeout(() => setIsMount(true), 300);
-    }, [form]);
+    }, []);
 
     const formItemClass = [s.formItem, {[s.active]: isMount}];
 
-    // 跳转到注册页面的函数
-    const handleRegister = useCallback(() => {
-        history.push('/register');
-    }, [history]);
-
     return (
         <div className={s.root}>
-            <Helmet title="欢迎登录" />
+            <Helmet title="欢迎注册" />
             <div className={s.logo}>
                 <Logo />
             </div>
             <Proxy className={s.proxy} />
             <div className={s.box}>
-                <Form form={form} name="login" onFinish={handleSubmit}>
+                <Form form={form} name="register" onFinish={handleSubmit}>
                     <div className={formItemClass}>
-                        <h1 className={s.header}>欢迎登录</h1>
+                        <h1 className={s.header}>欢迎注册</h1>
                     </div>
                     <div className={formItemClass}>
                         <FormItem
@@ -106,6 +79,18 @@ export default config({
                             prefix={<UserOutlined />}
                             placeholder="请输入用户名"
                             rules={[{required: true, message: '请输入用户名！'}]}
+                        />
+                    </div>
+                    <div className={formItemClass}>
+                        <FormItem
+                            name="email"
+                            allowClear
+                            prefix={<MailOutlined />}
+                            placeholder="请输入邮箱"
+                            rules={[
+                                {required: true, message: '请输入邮箱！'},
+                                {type: 'email', message: '邮箱格式不正确！'},
+                            ]}
                         />
                     </div>
                     <div className={formItemClass}>
@@ -133,11 +118,30 @@ export default config({
                         />
                     </div>
                     <div className={formItemClass}>
+                        <FormItem
+                            type="password"
+                            name="confirmPassword"
+                            prefix={<LockOutlined />}
+                            placeholder="请确认密码"
+                            rules={[
+                                {required: true, message: '请确认密码！'},
+                                ({getFieldValue}) => ({
+                                    validator(_, value) {
+                                        if (!value || getFieldValue('password') === value) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject('两次输入的密码不一致！');
+                                    },
+                                }),
+                            ]}
+                        />
+                    </div>
+                    <div className={formItemClass}>
                         <FormItem noStyle shouldUpdate style={{marginBottom: 0}}>
                             {() => (
                                 <Button
                                     className={s.submitBtn}
-                                    loading={login.loading}
+                                    loading={register.loading}
                                     type="primary"
                                     htmlType="submit"
                                     disabled={
@@ -147,19 +151,10 @@ export default config({
                                         form.getFieldsError().filter(({errors}) => errors.length).length
                                     }
                                 >
-                                    登录
+                                    注册
                                 </Button>
                             )}
                         </FormItem>
-                    </div>
-                    <div className={formItemClass}>
-                        <Button
-                            className={s.registerBtn}
-                            type="link"
-                            onClick={handleRegister}
-                        >
-                            注册
-                        </Button>
                     </div>
                 </Form>
                 <div className={s.errorTip}>{message}</div>

@@ -1,6 +1,5 @@
 import moment from 'moment';
-import executeSql from 'src/mock/web-sql';
-
+import { initDB, executeSql } from './web-sql';
 export default {
     // 获取列表
     'get /role/queryRoleByPage': async (config) => {
@@ -10,7 +9,7 @@ export default {
 
         if (!pageSize && !pageNum) {
             const list = await executeSql(`
-                select *
+                SELECT *
                 from roles ${where}
                 order by updatedAt desc`);
 
@@ -21,7 +20,7 @@ export default {
 
         const list = await executeSql(
             `
-                select *
+                SELECT *
                 from roles ${where}
                 order by updatedAt desc
                 limit ? offset ?`,
@@ -29,7 +28,7 @@ export default {
         );
 
         const countResult = await executeSql(`
-            select count(*)
+            SELECT count(*)
             from roles ${where}`);
 
         const total = countResult[0]['count(*)'] || 0;
@@ -46,7 +45,7 @@ export default {
     },
     'get /role/queryEnabledRoles': async (config) => {
         const list = await executeSql(`
-            select *
+            SELECT *
             from roles
             where enabled = 1
             order by updatedAt desc
@@ -60,11 +59,11 @@ export default {
     'get /role/getRoleDetailById': async (config) => {
         const {id} = config.params;
 
-        const result = await executeSql('select * from roles where id = ?', [id]);
+        const result = await executeSql('SELECT * from roles where id = ?', [id]);
 
         if (!result[0]) return [200, null];
 
-        const roleMenus = await executeSql('select * from role_menus where roleId = ?', [id]);
+        const roleMenus = await executeSql('SELECT * from role_menus where roleId = ?', [id]);
         result[0].menuIds = roleMenus.map((item) => item.menuId);
 
         return [200, result[0]];
@@ -73,7 +72,7 @@ export default {
     'get /role/getOneRole': async (config) => {
         const {name, systemId} = config.params;
 
-        const result = await executeSql('select * from roles where name = ? and systemId=?', [name, systemId]);
+        const result = await executeSql('SELECT * from roles where name = ? and systemId=?', [name, systemId]);
         return [200, result[0]];
     },
     // 添加
@@ -124,7 +123,7 @@ async function addSystemName(list) {
     const systemIds = list.map((item) => item.systemId).filter((item) => !!item && item !== 'undefined');
     if (systemIds && systemIds.length) {
         const systems = await executeSql(`
-            select *
+            SELECT *
             from menus
             where id in (${systemIds})
         `);

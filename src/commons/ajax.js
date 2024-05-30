@@ -50,7 +50,7 @@ export default ajax;
 export const ajaxHoc = hoc;
 
 export const get = ajax.get;
-export const post = ajax.post;
+export const post = ajax.post.bind(ajax);
 export const put = ajax.put;
 export const del = ajax.del;
 export const patch = ajax.patch;

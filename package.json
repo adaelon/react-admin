@@ -3,8 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "cross-env PORT=3000 NODE_ENV=development REACT_APP_RUN_ENV=development craco start",
-        "start": "nodemon -w craco.config.js -w ./src/theme.less -w ./src/setupProxy.js -w ./src/setupProxyConfig.json --exec \"yarn dev\"",
+        "dev": "cross-env PORT=3000 REACT_APP_MOCK=true NODE_ENV=development REACT_APP_RUN_ENV=development craco start",
+        "start": "cross-env REACT_APP_MOCK=true nodemon -w craco.config.js -w ./src/theme.less -w ./src/setupProxy.js -w ./src/setupProxyConfig.json --exec \"yarn dev\"",
         "build:test": "cross-env REACT_APP_CONFIG_ENV=test REACT_APP_RUN_ENV=test craco build",
         "build": "cross-env NODE_ENV=production REACT_APP_CONFIG_ENV=production REACT_APP_RUN_ENV=production craco build",
         "build:analyzer": "cross-env ANALYZER=true yarn build",
@@ -43,6 +43,7 @@
         "babel-plugin-import": "^1.13.3",
         "babel-plugin-named-asset-import": "^0.3.7",
         "babel-plugin-react-css-modules": "^5.2.6",
+        "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
         "babel-preset-react-app": "^10.0.0",
         "classnames": "^2.3.1",
         "craco-antd": "^1.19.0",

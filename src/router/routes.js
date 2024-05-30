@@ -10,7 +10,7 @@ checkPath(pageConfigs);
 const pageRoutes = pageConfigs.filter(({ path }) => !!path);
 
 // 所有人都可以访问的页面
-export const commonPaths = ['/', '/login'];
+export const commonPaths = ['/', '/login','/register'];
 
 /*
  * 非脚本抓取的路由，可以在这里编辑，

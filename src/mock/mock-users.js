@@ -1,24 +1,83 @@
 import moment from 'moment';
-import executeSql, { initDB } from 'src/mock/web-sql';
+import { initDB, executeSql } from './web-sql';
+import { encryptPassword, verifyPassword } from 'src/utils/encryption';
 
 export default {
-    // 重置数据库
-    'post /initDB': async (config) => {
+     // 重置数据库
+     'post /mock/initDB': async (config) => {
         await initDB(true);
         return [200, true];
     },
     // 用户登录
-    'post /login': async (config) => {
+    'post /mock/login': async (config) => {
         const { account, password } = JSON.parse(config.data);
+    
+        // 获取存储的用户信息
+        const result = await executeSql('SELECT * FROM users WHERE account = ?', [account]);
 
-        const result = await executeSql('select * from users where account=? and password=?', [account, password]);
-        if (!result?.length) return [400, { message: '用户名或密码错误' }];
-
+        
         const user = result[0];
+        console.log(user)
+        if(!user){
+            return [400, { message: '用户名错误' }];
+        }
+       
+        const hashedPassword = user.password;
+        console.log(hashedPassword)
+    
+        // 验证密码
+        if (!verifyPassword(password, hashedPassword)) {
+            return [400, { message: '密码错误' }];
+        }
+    
         user.token = 'test token';
-
+    
         return [200, user];
     },
+    
+    // 用户注册
+    'post /mock/register': async (config) => {
+        const { account, password, email } = JSON.parse(config.data);
+
+        // 检查用户名是否已存在
+        const existingUser = await executeSql('SELECT * FROM users WHERE account = ?', [account]);
+        console.log(existingUser)
+        if (existingUser?.length) {
+            return [400, { message: '用户名已存在' }];
+        }
+        const hashedPassword = encryptPassword(password);
+        console.log(hashedPassword)
+        // 插入新用户
+        const args = { account, password:hashedPassword, email, enabled: 1 };
+        console.log(args)
+      
+        
+        const result = await executeSql(
+            'INSERT INTO users (account, password, email, enabled) VALUES (?, ?, ?, ?)',
+            [account, hashedPassword, email, 1],
+            true
+        );
+        // 检查插入结果
+        if (!result) {
+            return [500, { message: '用户注册失败' }];
+        }
+        // 获取插入的用户ID
+        const userId = result.lastInsertRowid;
+
+
+        var name = account
+        // 返回新用户数据
+        const newUser = {
+            id: userId,
+            account,
+            name,
+            email,
+            token: 'test token'
+        };
+
+        return [200, newUser];
+    },
+
     // 退出登录
     'post /logout': {},
     // 获取列表
@@ -33,7 +92,7 @@ export default {
 
         const list = await executeSql(
             `
-            select *
+            SELECT *
             from users ${where}
             order by updatedAt desc
             limit ? offset ?`,
@@ -41,7 +100,7 @@ export default {
         );
 
         const countResult = await executeSql(`
-            select count(*)
+            SELECT count(*)
             from users ${where}
         `);
 
@@ -59,11 +118,11 @@ export default {
     'get user/getUserById': async (config) => {
         const { id } = config.params;
 
-        const result = await executeSql('select * from users where id = ?', [id]);
+        const result = await executeSql('SELECT * from users where id = ?', [id]);
 
         if (!result[0]) return [200, null];
 
-        const userRoles = await executeSql('select * from user_roles where userId = ?', [id]);
+        const userRoles = await executeSql('SELECT * from user_roles where userId = ?', [id]);
         result[0].roleIds = userRoles.map((item) => item.roleId);
 
         return [200, result[0]];
@@ -72,7 +131,7 @@ export default {
     'get /user/getOneUser': async (config) => {
         const { account } = config.params;
 
-        const result = await executeSql('select * from users where account = ?', [account]);
+        const result = await executeSql('SELECT * from users where account = ?', [account]);
         return [200, result[0]];
     },
     // 保存用户

@@ -1,17 +1,17 @@
-import moment from 'moment';
-import { convertToTree, findGenerationNodes } from '@ra-lib/admin';
-import executeSql from 'src/mock/web-sql';
 
+import { convertToTree, findGenerationNodes } from '@ra-lib/admin'
+import moment from 'moment';
+import { initDB, executeSql } from './web-sql';
 export default {
     // 获取用户收藏菜单
     'get /authority/queryUserCollectedMenus': async (config) => {
         const { userId } = config.params;
 
-        const userCollectMenus = await executeSql('select * from user_collect_menus where userId = ?', [userId]);
+        const userCollectMenus = await executeSql('SELECT * from user_collect_menus where userId = ?', [userId]);
         if (!userCollectMenus?.length) return [200, []];
         const menuIds = userCollectMenus.map((item) => item.menuId);
 
-        const list = await executeSql(`select *
+        const list = await executeSql(`SELECT *
                                        from menus
                                        where id in (${menuIds})`);
 
@@ -33,18 +33,18 @@ export default {
     // 获取用户菜单
     'get /authority/queryUserMenus': async (config) => {
         const { userId } = config.params;
-        const userRoles = await executeSql('select * from user_roles where userId = ?', [userId]);
+        const userRoles = await executeSql('SELECT * from user_roles where userId = ?', [userId]);
         if (!userRoles?.length) return [200, []];
 
         const roleIds = userRoles.map((item) => item.roleId).join(',');
 
-        const roles = await executeSql(`select *
+        const roles = await executeSql(`SELECT *
                                         from roles
                                         where id in (${roleIds})`);
 
         // 是超级管理员，返回所有菜单数据
         if (roles && roles.some((item) => item.type === 1)) {
-            const menus = await executeSql(`select *
+            const menus = await executeSql(`SELECT *
                                             from menus`);
 
             return [200, Array.from(menus)];
@@ -52,14 +52,14 @@ export default {
 
         console.log(roles);
 
-        const roleMenus = await executeSql(`select *
+        const roleMenus = await executeSql(`SELECT *
                                             from role_menus
                                             where roleId in (${roleIds})`);
 
         if (!roleMenus?.length) return [200, []];
 
         const menusId = roleMenus.map((item) => item.menuId).join(',');
-        const menus = await executeSql(`select *
+        const menus = await executeSql(`SELECT *
                                         from menus
                                         where id in (${menusId})`);
 
@@ -67,7 +67,7 @@ export default {
     },
     // 获取所有系统
     'get /menu/queryTopMenus': async (config) => {
-        const result = await executeSql(`select *
+        const result = await executeSql(`SELECT *
                                          from menus
                                          where parentId is null
                                             or parentId = ''`);
@@ -76,7 +76,7 @@ export default {
     },
     // 获取所有
     'get /menu/queryMenus': async (config) => {
-        const result = await executeSql('select * from menus');
+        const result = await executeSql('SELECT * from menus');
 
         return [200, result];
     },
@@ -84,14 +84,14 @@ export default {
     'get /menu/getOneMenu': async (config) => {
         const { name } = config.params;
 
-        const result = await executeSql('select * from menus where name = ?', [name]);
+        const result = await executeSql('SELECT * from menus where name = ?', [name]);
         return [200, result[0]];
     },
     // 根据code获取action
     'get /actionByCode': async (config) => {
         const { code } = config.params;
 
-        const result = await executeSql('select * from menus where code = ? and type=2', [code]);
+        const result = await executeSql('SELECT * from menus where code = ? and type=2', [code]);
         return [200, result[0]];
     },
     // 添加
@@ -117,7 +117,7 @@ export default {
         if (!menus?.length) return [200, true];
 
         // 获取menu最大id
-        const result = await executeSql('select * from menus order by id desc limit ? offset ? ', [1, 0]);
+        const result = await executeSql('SELECT * from menus order by id desc limit ? offset ? ', [1, 0]);
         const maxId = result[0] ? result[0].id : 0;
 
         // 处理id
@@ -185,7 +185,7 @@ export default {
     // 删除
     'delete re:/menu/.+': async (config) => {
         const id = parseInt(config.url.split('/')[2]);
-        const allMenus = await executeSql('select * from menus');
+        const allMenus = await executeSql('SELECT * from menus');
         const menuTreeData = convertToTree(allMenus);
 
         const nodes = findGenerationNodes(menuTreeData, id, 'id') || [];
@@ -212,7 +212,7 @@ export default {
                 codes.push(code);
             }
         }
-        const oldActions = await executeSql('select * from menus where parentId=? and type=?', [parentId, 2]);
+        const oldActions = await executeSql('SELECT * from menus where parentId=? and type=?', [parentId, 2]);
 
         // 保持id
         actions.forEach((item) => {
@@ -237,7 +237,7 @@ export default {
                 values.push(id);
                 holders.push('?');
             }
-            const oldAction = await executeSql('select * from menus where code=? and type=2', [code]);
+            const oldAction = await executeSql('SELECT * from menus where code=? and type=2', [code]);
             if (oldAction?.length) return [400, { message: `权限码：「${code} 」不能重复` }];
 
             await executeSql(
