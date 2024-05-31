@@ -3,7 +3,7 @@ import appPackage from '../../../package.json';
 
 const packageName = appPackage.name;
 const dbName = `${packageName}-test-database`;
-const dbVersion = 14; // 确保使用更高的版本号
+const dbVersion = 15; // 确保使用更高的版本号
 let db;
 
 const tables = ['menus', 'roles', 'users', 'role_menus', 'user_roles', 'user_collect_menus'];
@@ -19,10 +19,12 @@ async function openDB() {
                 console.log('Upgrading database...');
                 db = event.target.result;
                 createTables();
+               
             };
 
             request.onsuccess = (event) => {
                 console.log('Database opened successfully');
+                //initTablesData();
                 db = event.target.result;
                 resolve(db);
             };
@@ -63,7 +65,17 @@ function createTables() {
         }
     }
 }
-
+function parseCondition(cond) {
+    const match = cond.match(/(\w+)\s*(=|LIKE)\s*(.+)/i);
+    if (match) {
+        return {
+            field: match[1],
+            operator: match[2].toUpperCase(),
+            value: match[3].replace(/'/g, ''), // 去掉单引号
+        };
+    }
+    return null;
+}
 
 async function executeSql(sql, args = [], fullResult = false) {
     if (!db) {
@@ -84,20 +96,25 @@ async function executeSql(sql, args = [], fullResult = false) {
                 console.log('All records:', allRecords); // 打印所有记录
                 const condition = sql.match(/WHERE\s+(.+?)(\s+ORDER BY|\s+LIMIT|\s*$)/i);
                 let filteredRecords = allRecords;
+                console.log(condition)
 
                 if (condition) {
                     const conditions = condition[1].split(/\s+AND\s+/i);
                     filteredRecords = allRecords.filter(record => {
                         return conditions.every(cond => {
-                            const [field, operator, value] = cond.split(/\s+/);
-                            if (operator.toUpperCase() === 'LIKE') {
-                                const regex = new RegExp(value.replace(/%/g, '.*'), 'i');
-                                return regex.test(record[field]);
+                            const parsedCondition = parseCondition(cond);
+                            console.log(parsedCondition)
+                            if (parsedCondition) {
+                                const { field, operator, value } = parsedCondition;
+                                if (operator === 'LIKE') {
+                                    const regex = new RegExp(value.replace(/%/g, '.*'), 'i');
+                                    return regex.test(record[field]);
+                                }
+                                return record[field] === value;
                             }
-                            return record[field] === args.shift();
+                            return true;
                         });
                     });
-                    console.log(conditions)
                 }
 
                 if (sql.includes('ORDER BY')) {
@@ -183,9 +200,12 @@ function getTableNameFromSql(sql) {
 async function initDB(init) {
     console.log('Initializing database...');
     await openDB();
-    const hasInitData = await usersHasData();
-    if (init) await dropAllTables();
-    if (init || !hasInitData) await initTablesData();
+    //const hasInitData = await usersHasData();
+    //if (init) await dropAllTables();
+    //if (init || !hasInitData) await initTablesData();
+    //console.log("drop")
+   // await dropAllTables();
+    console.log('table')
     await initTablesData();
 }
 
@@ -197,16 +217,60 @@ async function usersHasData() {
 
 // 删除所有数据库表
 async function dropAllTables() {
-    console.log('Dropping all tables...');
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, 15);
+        request.onupgradeneeded = (event) => {
+            console.log('Dropping all tables...');
+            db = event.target.result;
+            for (const storeName of db.objectStoreNames) {
+                console.log(`Deleting table: ${storeName}`);
+                db.deleteObjectStore(storeName);
+            }
+            createTables();
+            resolve();
+        };
+        request.onsuccess = (event) => {
+            console.log('Database opened for dropping tables');
+        };
+        request.onerror = (event) => {
+            console.error('Error opening database for dropping tables', event.target.error);
+            reject(event.target.error);
+        };
+    });
+}
+
+async function executeSqlNoArgs(sql) {
     if (!db) {
-        db = await openDB();
+        await openDB();
     }
-    for (const storeName of db.objectStoreNames) {
-        const tableName = storeName.match(/IF NOT EXISTS\s+(\w+)/i)?.[1] || storeName.trim();
-        console.log(`Deleting table: ${tableName}`);
-        db.deleteObjectStore(tableName);
-    }
-    createTables();
+
+    return new Promise((resolve, reject) => {
+        const tableName = getTableNameFromSql(sql);
+        const transaction = db.transaction(tableName, 'readwrite');
+        const store = transaction.objectStore(tableName);
+
+        let request;
+        if (sql.startsWith('INSERT')) {
+            const values = sql.match(/\((.*?)\)/g).map(val => val.replace(/[()]/g, ''));
+            const columns = values[0].split(',').map(v => v.trim());
+            const data = {};
+            values[1].split(',').forEach((val, idx) => {
+                data[columns[idx]] = val.trim().replace(/'/g, '');
+            });
+            request = store.add(data);
+        } else {
+            return reject('Unsupported SQL');
+        }
+
+        request.onsuccess = (event) => {
+            resolve(event.target.result);
+        };
+
+        request.onerror = (event) => {
+            console.error('SQL execution error:', event.target.error);
+            reject(event.target.error);
+        };
+    });
 }
 
 
@@ -223,7 +287,7 @@ async function executeSplit(sql, keyWord) {
     console.log(`Executing split SQL: ${sql}`);
     const arr = sql.split(keyWord).filter((item) => !!item.trim()).map((item) => keyWord + item);
     for (let sql of arr) {
-        await executeSql(sql);
+        await executeSqlNoArgs(sql);
     }
 }
 

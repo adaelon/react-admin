@@ -14,7 +14,13 @@ export default {
 
         // 作为子应用，不加载
         if (IS_SUB) return [];
-        
+         // 前端硬编码菜单
+         return [
+            {id: 1, title: '系统管理', order: 900, type: 1},
+            {id: 2, parentId: 1, title: '用户管理', path: '/users', order: 900, type: 1},
+            {id: 3, parentId: 1, title: '角色管理', path: '/roles', order: 900, type: 1},
+            {id: 4, parentId: 1, title: '菜单管理', path: '/menus', order: 900, type: 1},
+        ];
 
         // 获取服务端数据，并做缓存，防止多次调用接口
         return (this.getMenuData.__CACHE =

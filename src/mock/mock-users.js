@@ -4,7 +4,7 @@ import { encryptPassword, verifyPassword } from 'src/utils/encryption';
 
 export default {
      // 重置数据库
-     'post /mock/initDB': async (config) => {
+     'post /initDB': async (config) => {
         await initDB(true);
         return [200, true];
     },
@@ -94,7 +94,6 @@ export default {
             `
             SELECT *
             from users ${where}
-            order by updatedAt desc
             limit ? offset ?`,
             [pageSize, (pageNum - 1) * pageSize],
         );
