@@ -60,8 +60,12 @@ export default config({
                 pageSize: options.pageSize || pageSize,
             };
             const res = await props.ajax.get('/role/queryRoleByPage', params, {setLoading});
-            const dataSource = (res?.content || []).filter((item) => item.type === 3);
-            const total = res?.totalElements || 0;
+            
+            const [status,data]=res;
+            
+            const dataSource = (data.content || []).filter((item) => item.type === 3);
+            console.log(dataSource)
+            const total = data.totalElements || 0;
             setDataSource(dataSource);
             setTotal(total);
         },

@@ -21,7 +21,8 @@ export default config({
     const isDetail = record?.isDetail;
 
     const params = useMemo(() => {
-        return { id: record?.id };
+        console.log(record.id)
+        return { id: record.id };
     }, [record]);
 
     // 编辑时，查询详情数据
@@ -29,8 +30,10 @@ export default config({
         mountFire: isEdit,
         setLoading,
         formatResult: (res) => {
+            console.log(res)
+            const[status,data]=res;
             if (!res) return;
-            form.setFieldsValue(res);
+            form.setFieldsValue(data);
         },
     });
     const { run: save } = props.ajax.usePost('/user/addUser', null, { setLoading, successTip: '创建成功！' });

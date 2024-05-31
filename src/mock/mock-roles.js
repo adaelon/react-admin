@@ -8,10 +8,10 @@ export default {
         const where = `where name like '%${name}%'`;
 
         if (!pageSize && !pageNum) {
-            const list = await executeSql(`
-                SELECT *
+            const list = await executeSql(
+                `SELECT *
                 from roles ${where}
-                order by updatedAt desc`);
+                `);
 
             await addSystemName(list);
 
@@ -19,19 +19,18 @@ export default {
         }
 
         const list = await executeSql(
-            `
-                SELECT *
+            `SELECT *
                 from roles ${where}
-                order by updatedAt desc
                 limit ? offset ?`,
             [pageSize, (pageNum - 1) * pageSize],
         );
 
-        const countResult = await executeSql(`
-            SELECT count(*)
+        const countResult = await executeSql(
+            `SELECT count(*)
             from roles ${where}`);
+           
 
-        const total = countResult[0]['count(*)'] || 0;
+        const total = countResult.length || 0;
 
         await addSystemName(list);
 
@@ -44,12 +43,8 @@ export default {
         ];
     },
     'get /role/queryEnabledRoles': async (config) => {
-        const list = await executeSql(`
-            SELECT *
-            from roles
-            where enabled = 1
-            order by updatedAt desc
-        `);
+        const list = await executeSql(
+            `SELECT * from roles where enabled = ?`,['1']);
 
         await addSystemName(list);
 
@@ -122,8 +117,8 @@ export default {
 async function addSystemName(list) {
     const systemIds = list.map((item) => item.systemId).filter((item) => !!item && item !== 'undefined');
     if (systemIds && systemIds.length) {
-        const systems = await executeSql(`
-            SELECT *
+        const systems = await executeSql(
+            `SELECT *
             from menus
             where id in (${systemIds})
         `);

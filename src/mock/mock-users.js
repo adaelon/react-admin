@@ -91,19 +91,19 @@ export default {
         `;
 
         const list = await executeSql(
-            `
-            SELECT *
+            `SELECT *
             from users ${where}
             limit ? offset ?`,
             [pageSize, (pageNum - 1) * pageSize],
         );
 
-        const countResult = await executeSql(`
-            SELECT count(*)
+        const countResult = await executeSql(
+            `SELECT count(*)
             from users ${where}
         `);
 
-        const total = countResult[0]['count(*)'] || 0;
+        //console.log( countResult.length)
+        const total = countResult.length || 0;
 
         return [
             200,
@@ -121,8 +121,8 @@ export default {
 
         if (!result[0]) return [200, null];
 
-        const userRoles = await executeSql('SELECT * from user_roles where userId = ?', [id]);
-        result[0].roleIds = userRoles.map((item) => item.roleId);
+        //const userRoles = await executeSql('SELECT * from user_roles where userId = ?', [id]);
+        //result[0].roleIds = userRoles.map((item) => item.roleId);
 
         return [200, result[0]];
     },
@@ -161,7 +161,7 @@ export default {
             'UPDATE users SET account=?, name=?, password=?, mobile=?, email=?, updatedAt=? WHERE id=?',
             args,
         );
-        await executeSql('DELETE FROM user_roles WHERE userId=?', [id]);
+        //await executeSql('DELETE FROM user_roles WHERE userId=?', [id]);
 
         if (roleIds?.length) {
             for (let roleId of roleIds) {

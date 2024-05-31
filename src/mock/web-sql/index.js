@@ -76,7 +76,7 @@ function parseCondition(cond) {
     }
     return null;
 }
-
+//执行带参数的sql语句
 async function executeSql(sql, args = [], fullResult = false) {
     if (!db) {
         db = await openDB();
@@ -103,18 +103,21 @@ async function executeSql(sql, args = [], fullResult = false) {
                     filteredRecords = allRecords.filter(record => {
                         return conditions.every(cond => {
                             const parsedCondition = parseCondition(cond);
-                            console.log(parsedCondition)
+                            
                             if (parsedCondition) {
                                 const { field, operator, value } = parsedCondition;
+                                //处理like
                                 if (operator === 'LIKE') {
                                     const regex = new RegExp(value.replace(/%/g, '.*'), 'i');
                                     return regex.test(record[field]);
                                 }
-                                return record[field] === value;
+                                
+                                return record[field] === args[0];
                             }
                             return true;
                         });
                     });
+                    console.log(filteredRecords)
                 }
 
                 if (sql.includes('ORDER BY')) {
@@ -160,14 +163,46 @@ async function executeSql(sql, args = [], fullResult = false) {
                 reject(event.target.error);
             };
         } else if (sql.startsWith('UPDATE')) {
-            request = store.put(args[0]);
+            const [updatePart, wherePart] = sql.split('WHERE');
+            const setPart = updatePart.match(/SET\s+(.+?)\s*$/i)[1];
+            const conditions = wherePart.match(/(\w+)\s*=\s*\?/gi);
+            const updates = setPart.split(',').map(s => s.trim().split('='));
+            
+            request = store.getAll();
             request.onsuccess = (event) => {
-                resolve(event.target.result);
+                const allRecords = event.target.result;
+                const conditionFields = conditions.map(cond => cond.split('=')[0].trim());
+                const conditionValues = args.slice(-conditionFields.length);
+
+                const recordsToUpdate = allRecords.filter(record => {
+                    return conditionFields.every((field, index) => record[field] === conditionValues[index]);
+                });
+
+                recordsToUpdate.forEach(record => {
+                    updates.forEach(([field, value], index) => {
+                        record[field.trim()] = args[index];
+                    });
+
+                    const updateRequest = store.put(record);
+                    updateRequest.onsuccess = (event) => {
+                        resolve(fullResult ? event.target.result : record);
+                    };
+                    updateRequest.onerror = (event) => {
+                        console.error('SQL execution error:', event.target.error);
+                        reject(event.target.error);
+                    };
+                });
+
+                if (recordsToUpdate.length === 0) {
+                    resolve([]);
+                }
             };
             request.onerror = (event) => {
                 console.error('SQL execution error:', event.target.error);
                 reject(event.target.error);
             };
+
+            return;
         } else if (sql.startsWith('DELETE')) {
             request = store.delete(args[0].id);
             request.onsuccess = (event) => {
@@ -238,7 +273,7 @@ async function dropAllTables() {
         };
     });
 }
-
+//initDB使用
 async function executeSqlNoArgs(sql) {
     if (!db) {
         await openDB();

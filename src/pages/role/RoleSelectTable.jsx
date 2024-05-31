@@ -45,7 +45,9 @@ export default class RoleSelectTable extends Component {
             this.setState({ loading: true });
             const res = await this.props.ajax.get('/role/queryEnabledRoles');
 
-            let roles = res || [];
+            console.log(res)
+            const [status,data]=res
+            let roles = data || [];
             if (WITH_SYSTEMS) {
                 const systems = [];
                 roles.forEach((item) => {

@@ -4,6 +4,7 @@ import { PageContent, QueryBar, FormItem, Table, Pagination, Operator, ToolBar }
 import config from 'src/commons/config-hoc';
 import options from 'src/options';
 import EditModal from './EditModal';
+import { CodeFilled } from '@ant-design/icons';
 
 export default config({
     path: '/users',
@@ -33,9 +34,11 @@ export default config({
     const { data: { dataSource, total } = {} } = props.ajax.useGet('/user/queryUsersByPage', params, [params], {
         setLoading,
         formatResult: (res) => {
+            console.log(res)
+            const [status, data] = res;
             return {
-                dataSource: res?.content || [],
-                total: res?.totalElements || 0,
+                dataSource: data.content || [],
+                total: data.totalElements || 0,
             };
         },
     });
