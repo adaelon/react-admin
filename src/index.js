@@ -20,13 +20,13 @@ import App from './App';
 import { setMainApp } from '@ra-lib/admin';
 import qiankun from './qiankun';
 import { post } from './commons/ajax';
-import { initDB, executeSql } from './mock/web-sql';
+import { initDB, executeSql,openDB } from './mock/web-sql';
 // 开启mock，这个判断不要修改，否则会把mock相关js打入生产包，很大
 if (process.env.NODE_ENV === 'development' && process.env.REACT_APP_MOCK) {
     require('./mock/index');
     console.warn('mock is enabled!!!');
      // 初始化 mock 数据库
-    initDB(true);
+    openDB();
 }
 
 function getRootDom(props) {

@@ -63,7 +63,8 @@ export default config({
             
             const [status,data]=res;
             
-            const dataSource = (data.content || []).filter((item) => item.type === 3);
+            //const dataSource = (data.content || []).filter((item) => item.type === 1);
+            const dataSource = data.content || []
             console.log(dataSource)
             const total = data.totalElements || 0;
             setDataSource(dataSource);

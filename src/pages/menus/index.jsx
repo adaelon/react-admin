@@ -7,7 +7,7 @@ import MenuEdit from './MenuEdit';
 import ActionEdit from './ActionEdit';
 import theme from 'src/theme.less';
 import s from './style.less';
-
+import { ComponentProvider, Loading, getLoginUser, setLoginUser /*queryParse,*/ } from '@ra-lib/admin';
 export default config({
     path: '/menus',
 })(function MenuManager(props) {
@@ -15,20 +15,32 @@ export default config({
     const [selectedMenu, setSelectedMenu] = useState(null);
     const [hasUnSaveMenu, setHasUnSaveMenu] = useState(false);
     const [hasUnSaveAction, setHasUnSaveAction] = useState(false);
+    console.log(getLoginUser().id)
+    const { id } = getLoginUser();
     const {
         loading,
         data: menus = [],
         run: fetchMenus,
-    } = props.ajax.useGet('/menu/queryMenus', null, {
+    } = props.ajax.useGet('/menu/queryMenus', {userId:id}, {
         formatResult: (res) => {
-            return (res || [])
+            
+            const [status,data]=res;
+            
+            return (data || [])
                 .map((item, index, arr) => {
                     const actions = arr.filter((it) => it.type === 2 && it.parentId === item.id);
                     return {
                         ...item,
                         id: '' + item.id,
-                        parentId: item.parentId ? '' + item.parentId : item.parentId,
-                        order: item.order ?? item.sort ?? item.ord,
+                        parentId: item.parentId && item.parentId !== 'NULL' ? '' + item.parentId : null,
+                        order: item.order ?? item.sort ?? item.ord ?? 0,
+                        title: item.title !== 'NULL' ? item.title : '',
+                        path: item.path !== 'NULL' ? item.path : '',
+                        icon: item.icon !== 'NULL' ? item.icon : '',
+                        code: item.code !== 'NULL' ? item.code : '',
+                        name: item.name !== 'NULL' ? item.name : '',
+                        basePath: item.basePath !== 'NULL' ? item.basePath : '',
+                        entry: item.entry !== 'NULL' ? item.entry : '',
                         actions,
                     };
                 })
@@ -52,6 +64,7 @@ export default config({
             await checkUnSave(showTip);
 
             const menuData = menus.find((item) => item.id === key);
+            console.log(menuData)
             setSelectedMenu(menuData);
             setIsAdd(false);
         },

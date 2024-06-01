@@ -55,7 +55,9 @@ export default config()(function MenuTableSelect(props) {
     const fetchMenus = useCallback(async () => {
         const res = await props.ajax.get('/menu/queryMenus', { enabled: true });
 
-        return (res || []).map((item) => {
+        const [status,data]=res;
+        console.log(data)
+        return (data || []).map((item) => {
             return {
                 ...item,
             };

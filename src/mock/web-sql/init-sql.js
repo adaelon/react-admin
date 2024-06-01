@@ -4,7 +4,7 @@ const now = moment().format('YYYY-MM-DD HH:mm:ss');
 
 export default `
     CREATE TABLE IF NOT EXISTS menus (
-        id        INTEGER PRIMARY KEY,
+        id        INTEGER PRIMARY KEY AUTOINCREMENT,
         parentId  INTEGER                             NULL,
         title     VARCHAR(50)                         NULL,
         icon      VARCHAR(50)                         NULL,
@@ -22,7 +22,7 @@ export default `
         CONSTRAINT menus_id_uindex UNIQUE (id)
     );
     CREATE TABLE IF NOT EXISTS user_collect_menus (
-        id        INTEGER PRIMARY KEY,
+        id        INTEGER PRIMARY KEY AUTOINCREMENT,
         userId    INTEGER                             NOT NULL,
         menuId    INTEGER                             NOT NULL,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -30,7 +30,7 @@ export default `
         CONSTRAINT user_collect_menus_id_uindex UNIQUE (id)
     );
     CREATE TABLE IF NOT EXISTS role_menus (
-        id        INTEGER PRIMARY KEY,
+        id        INTEGER PRIMARY KEY AUTOINCREMENT,
         roleId    INTEGER                             NOT NULL,
         menuId    INTEGER                             NOT NULL,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -38,7 +38,7 @@ export default `
         CONSTRAINT role_menus_id_uindex UNIQUE (id)
     );
     CREATE TABLE IF NOT EXISTS roles (
-        id        INTEGER PRIMARY KEY,
+        id        INTEGER PRIMARY KEY AUTOINCREMENT,
         type      INTEGER,
         systemId  INTEGER,
         enabled   TINYINT(1)                          NOT NULL,
@@ -49,7 +49,7 @@ export default `
         CONSTRAINT roles_id_uindex UNIQUE (id)
     );
     CREATE TABLE IF NOT EXISTS user_roles (
-        id        INTEGER PRIMARY KEY,
+        id        INTEGER PRIMARY KEY AUTOINCREMENT,
         userId    INTEGER                             NOT NULL,
         roleId    INTEGER                             NOT NULL,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -57,7 +57,7 @@ export default `
         CONSTRAINT user_roles_id_uindex UNIQUE (id)
     );
     CREATE TABLE IF NOT EXISTS users (
-        id        INTEGER PRIMARY KEY,
+        id        INTEGER PRIMARY KEY AUTOINCREMENT,
         account   VARCHAR(50)                         NOT NULL,
         name      VARCHAR(50)                         NULL,
         password  VARCHAR(20)                         NULL,
@@ -72,6 +72,10 @@ export default `
 export const initRolesSql = `
     INSERT INTO roles (id, type, enabled, name, remark, createdAt, updatedAt)
     VALUES (1, 1, 1, '超级管理员', '超级管理员拥有系统所有权限', '${now}', '${now}');
+    INSERT INTO roles (id, type, enabled, name, remark, createdAt, updatedAt)
+    VALUES (2, 2, 1, '商品管理员', '商品管理员只能查看和操作商品', '${now}', '${now}');
+    INSERT INTO roles (id, type, enabled, name, remark, createdAt, updatedAt)
+    VALUES (3, 3, 1, '订单管理员', '订单管理员只能查看和操作商品', '${now}', '${now}');
 `;
 
 export const initRoleMenusSql = `
@@ -89,12 +93,20 @@ export const initRoleMenusSql = `
 
 export const initUsersSql = `
     INSERT INTO users (id, account, name, password, mobile, email, enabled)
-    VALUES (1111, 'admin', '管理员', '7828d7aa6efcf983b850025a6ceccad25905f5ecfa1758edbd1715d012747f2e', '18888888888', 'email@qq.com', 1);
+    VALUES (1111, 'superadmin', '超级管理员', '7828d7aa6efcf983b850025a6ceccad25905f5ecfa1758edbd1715d012747f2e', '18888888888', 'email@qq.com', 1);
+    INSERT INTO users (id, account, name, password, mobile, email, enabled)
+    VALUES (1112, 'product', '商品管理员', '7828d7aa6efcf983b850025a6ceccad25905f5ecfa1758edbd1715d012747f2e', '18888888888', 'email@qq.com', 1);
+    INSERT INTO users (id, account, name, password, mobile, email, enabled)
+    VALUES (1113, 'order', '订单管理员', '7828d7aa6efcf983b850025a6ceccad25905f5ecfa1758edbd1715d012747f2e', '18888888888', 'email@qq.com', 1);
 `;
 
 export const initUserRolesSql = `
     INSERT INTO user_roles (id, userId, roleId, createdAt, updatedAt)
     VALUES (1, 1111, 1, '${now}', '${now}');
+    INSERT INTO user_roles (id, userId, roleId, createdAt, updatedAt)
+    VALUES (2, 1112, 2, '${now}', '${now}');
+    INSERT INTO user_roles (id, userId, roleId, createdAt, updatedAt)
+    VALUES (2, 1113, 3, '${now}', '${now}');
 `;
 
 export const initMenuSql = `

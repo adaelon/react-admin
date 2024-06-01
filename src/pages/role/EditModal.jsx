@@ -24,8 +24,10 @@ export default config({
         mountFire: isEdit, // 组件didMount时，只有编辑时才触发请求
         formatResult: (res) => {
             if (!res) return;
+            console.log(res)
+            const [status,data]=res;
             const values = {
-                ...res,
+                ...data,
             };
             form.setFieldsValue(values);
         },

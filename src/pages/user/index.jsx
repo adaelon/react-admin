@@ -18,6 +18,7 @@ export default config({
     const [form] = Form.useForm();
 
     const params = useMemo(() => {
+        
         return {
             ...conditions,
             pageNum,
@@ -57,6 +58,7 @@ export default config({
             key: 'operator',
             width: 250,
             render: (value, record) => {
+                console.log(record)
                 const { id, name } = record;
                 const items = [
                     {

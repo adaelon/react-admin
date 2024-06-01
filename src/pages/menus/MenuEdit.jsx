@@ -6,6 +6,7 @@ import config from 'src/commons/config-hoc';
 import { WITH_SYSTEMS } from 'src/config';
 import options from 'src/options';
 import styles from './style.less';
+import {fetchMenuCount} from 'src/utils/menuData'; //异步获取菜单信息
 
 const menuTargetOptions = options.menuTarget;
 
@@ -54,13 +55,18 @@ export default config()(function MenuEdit(props) {
     const handleSubmit = useCallback(
         async (values) => {
             if (loading) return;
-
+            const menuCount = await fetchMenuCount().then((count) => {
+                //console.log('Final data:', data); // 这里可以访问到处理后的数据
+                return count;
+            });
             const params = {
                 ...values,
+                id:menuCount+1,
                 type: 1, // 菜单
                 sort: values.order,
                 ord: values.order,
             };
+            console.log(params)
 
             if (isAdd) {
                 if (isAddSub && addTabKey === '2') {
@@ -81,6 +87,7 @@ export default config()(function MenuEdit(props) {
                     onSubmit && onSubmit({ id, isAdd: true });
                 } else {
                     const res = await saveMenu(params);
+                    console.log(res)
                     const { id } = res;
                     onSubmit && onSubmit({ ...params, id, isAdd: true });
 

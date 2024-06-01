@@ -2,8 +2,10 @@ import ajax from 'src/commons/ajax';
 import { getLoginUser, isLoginPage, formatMenus, getContainerId } from '@ra-lib/admin';
 import { isNoAuthPage } from 'src/commons';
 import { IS_SUB } from 'src/config';
-
+import {fetchAndCacheMenuData} from 'src/utils/menuData'; //密码加密的函数
+let returnData
 export default {
+    
     /**
      * 获取菜单
      * @returns {Promise<*[]|*>}
@@ -12,23 +14,18 @@ export default {
         // 非登录页面，不加载菜单
         if (isNoAuthPage()) return [];
 
-        // 作为子应用，不加载
-        if (IS_SUB) return [];
-         // 前端硬编码菜单
-         return [
-            {id: 1, title: '系统管理', order: 900, type: 1},
-            {id: 2, parentId: 1, title: '用户管理', path: '/users', order: 900, type: 1},
-            {id: 3, parentId: 1, title: '角色管理', path: '/roles', order: 900, type: 1},
-            {id: 4, parentId: 1, title: '菜单管理', path: '/menus', order: 900, type: 1},
-        ];
+        
+            
+        console.log(getLoginUser().id)
+        
+        const returnData = await fetchAndCacheMenuData().then((data) => {
+            console.log('Final data:', data); // 这里可以访问到处理后的数据
+            return data;
+        });
+        return returnData;
+      
 
-        // 获取服务端数据，并做缓存，防止多次调用接口
-        return (this.getMenuData.__CACHE =
-            this.getMenuData.__CACHE ||
-            ajax
-                .get('/authority/queryUserMenus', { userId: getLoginUser()?.id })
-                .then((res) => res.map((item) => ({ ...item, order: item.order ?? item.ord ?? item.sort })))
-                .catch(() => []));
+       
 
         // 前端硬编码菜单
          return [

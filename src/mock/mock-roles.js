@@ -44,7 +44,7 @@ export default {
     },
     'get /role/queryEnabledRoles': async (config) => {
         const list = await executeSql(
-            `SELECT * from roles where enabled = ?`,['1']);
+            `SELECT * from roles where enabled = ?`,[1]);
 
         await addSystemName(list);
 
@@ -54,11 +54,11 @@ export default {
     'get /role/getRoleDetailById': async (config) => {
         const {id} = config.params;
 
-        const result = await executeSql('SELECT * from roles where id = ?', [id]);
+        const result = await executeSql('SELECT * from roles where id = ?', [parseInt(id)]);
 
         if (!result[0]) return [200, null];
 
-        const roleMenus = await executeSql('SELECT * from role_menus where roleId = ?', [id]);
+        const roleMenus = await executeSql('SELECT * from role_menus where roleId = ?', [parseInt(id)]);
         result[0].menuIds = roleMenus.map((item) => item.menuId);
 
         return [200, result[0]];
@@ -83,7 +83,7 @@ export default {
 
         if (menuIds?.length) {
             for (let menuId of menuIds) {
-                await executeSql('INSERT INTO role_menus (roleId, menuId) VALUES (?,?)', [roleId, menuId]);
+                await executeSql('INSERT INTO role_menus (roleId, menuId) VALUES (?,?)', [parseInt(roleId), parseInt(menuId)]);
             }
         }
 
@@ -92,14 +92,14 @@ export default {
     // 修改
     'post /role/updateRoleById': async (config) => {
         const {id, name, remark = '', enabled, systemId, menuIds} = JSON.parse(config.data);
-        const args = [enabled ? 1 : 0, systemId, name, remark, moment().format('YYYY-MM-DD HH:mm:ss'), id];
+        const args = [enabled ? 1 : 0, systemId, name, remark, moment().format('YYYY-MM-DD HH:mm:ss'), parseInt(id)];
 
         await executeSql('UPDATE roles SET enabled=?, systemId=?, name=?, remark=?, updatedAt=? WHERE id=?', args);
         await executeSql('DELETE FROM role_menus WHERE roleId=?', [id]);
 
         if (menuIds?.length) {
             for (let menuId of menuIds) {
-                await executeSql('INSERT INTO role_menus (roleId, menuId) VALUES (?,?)', [id, menuId]);
+                await executeSql('INSERT INTO role_menus (roleId, menuId) VALUES (?,?)', [parseInt(id), parseInt(menuId)]);
             }
         }
 
@@ -108,8 +108,8 @@ export default {
     // 删除
     'delete re:/role/.+': async (config) => {
         const id = config.url.split('/')[2];
-        await executeSql('DELETE FROM roles WHERE id=?', [id]);
-        await executeSql('DELETE FROM role_menus WHERE roleId=?', [id]);
+        await executeSql('DELETE FROM roles WHERE id=?', [parseInt(id)]);
+        await executeSql('DELETE FROM role_menus WHERE roleId=?', [parseInt(id)]);
         return [200, true];
     },
 };

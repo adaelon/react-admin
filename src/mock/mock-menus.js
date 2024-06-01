@@ -33,36 +33,45 @@ export default {
     // 获取用户菜单
     'get /authority/queryUserMenus': async (config) => {
         const { userId } = config.params;
-        const userRoles = await executeSql('SELECT * from user_roles where userId = ?', [userId]);
+        
+        const userRoles = await executeSql('SELECT * from user_roles where userId = ?', [parseInt(userId)]);
         if (!userRoles?.length) return [200, []];
 
         const roleIds = userRoles.map((item) => item.roleId).join(',');
 
+        console.log(roleIds)
         const roles = await executeSql(`SELECT *
                                         from roles
-                                        where id in (${roleIds})`);
+                                        where id = ?`,[parseInt(roleIds)]);
+                                      
 
+        console.log(roles && roles.some((item) => item.type === 1))
         // 是超级管理员，返回所有菜单数据
         if (roles && roles.some((item) => item.type === 1)) {
             const menus = await executeSql(`SELECT *
                                             from menus`);
 
+            console.log(menus)
+
             return [200, Array.from(menus)];
         }
 
-        console.log(roles);
+      
 
         const roleMenus = await executeSql(`SELECT *
                                             from role_menus
-                                            where roleId in (${roleIds})`);
+                                            where roleId = ?`,[parseInt(roleIds)]);
+
+        
 
         if (!roleMenus?.length) return [200, []];
 
         const menusId = roleMenus.map((item) => item.menuId).join(',');
         const menus = await executeSql(`SELECT *
                                         from menus
-                                        where id in (${menusId})`);
+                                        where id = ?`,[parseInt(menusId)]);
 
+        
         return [200, Array.from(menus)];
     },
     // 获取所有系统
@@ -98,17 +107,21 @@ export default {
     'post /menu/addMenu': async (config) => {
         const { keys, args, holders } = getMenuData(config);
 
+
+        console.log(keys)
+        console.log(args)
+        console.log(holders)
         const result = await executeSql(
-            `
-            INSERT INTO menus (${keys})
+            `INSERT INTO menus (${keys})
             VALUES (${holders})
         `,
             args,
             true,
         );
-        const { insertId: menuId } = result;
+        console.log(result)
+       
 
-        return [200, { id: menuId }];
+        return [200, { id: result}];
     },
     // 批量添加
     'post /menu/addSubMenus': async (config) => {
@@ -151,8 +164,7 @@ export default {
             holders.push('?');
 
             const result = await executeSql(
-                `
-                INSERT INTO menus (${keys})
+                `INSERT INTO menus (${keys})
                 VALUES (${holders})
             `,
                 args,
@@ -252,6 +264,7 @@ export default {
 
 function getMenuData(config, parse = JSON.parse) {
     const {
+        id = '',
         target = 'menu',
         parentId = '',
         title,
@@ -266,6 +279,7 @@ function getMenuData(config, parse = JSON.parse) {
         enabled = true,
     } = parse(config.data);
     const data = Object.entries({
+        id,
         target,
         parentId,
         title,

@@ -45,7 +45,7 @@ export default class RoleSelectTable extends Component {
             this.setState({ loading: true });
             const res = await this.props.ajax.get('/role/queryEnabledRoles');
 
-            console.log(res)
+            
             const [status,data]=res
             let roles = data || [];
             if (WITH_SYSTEMS) {
@@ -75,9 +75,7 @@ export default class RoleSelectTable extends Component {
                 });
 
                 roles = systems;
-            } else {
-                roles = roles.filter((item) => item.type !== 2);
-            }
+            } 
 
             roles.sort((a, b) => (a.type < b.type ? -1 : 1));
 

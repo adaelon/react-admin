@@ -96,6 +96,7 @@ export default {
             limit ? offset ?`,
             [pageSize, (pageNum - 1) * pageSize],
         );
+        console.log(list)
 
         const countResult = await executeSql(
             `SELECT count(*)
@@ -117,7 +118,7 @@ export default {
     'get user/getUserById': async (config) => {
         const { id } = config.params;
 
-        const result = await executeSql('SELECT * from users where id = ?', [id]);
+        const result = await executeSql('SELECT * from users where id = ?', [parseInt(id)]);
 
         if (!result[0]) return [200, null];
 
@@ -146,7 +147,7 @@ export default {
 
         if (roleIds?.length) {
             for (let roleId of roleIds) {
-                await executeSql('INSERT INTO user_roles (roleId, userId) VALUES (?,?)', [roleId, userId]);
+                await executeSql('INSERT INTO user_roles (roleId, userId) VALUES (?,?)', [parseInt(roleId), parseInt(userId)]);
             }
         }
 
@@ -155,7 +156,7 @@ export default {
     // 修改用户
     'post /user/updateUserById': async (config) => {
         const { id, account, name, password, email, mobile, roleIds } = JSON.parse(config.data);
-        const args = [account, name, password, mobile, email, moment().format('YYYY-MM-DD HH:mm:ss'), id];
+        const args = [account, name, password, mobile, email, moment().format('YYYY-MM-DD HH:mm:ss'), parseInt(id)];
 
         await executeSql(
             'UPDATE users SET account=?, name=?, password=?, mobile=?, email=?, updatedAt=? WHERE id=?',
@@ -174,8 +175,8 @@ export default {
     // 删除用户
     'delete re:/user/.+': async (config) => {
         const id = config.url.split('/')[2];
-        await executeSql('DELETE FROM users WHERE id=?', [id]);
-        await executeSql('DELETE FROM user_roles WHERE userId=?', [id]);
+        await executeSql('DELETE FROM users WHERE id=?', [parseInt(id)]);
+        await executeSql('DELETE FROM user_roles WHERE userId=?', [parseInt(id)]);
         return [200, true];
     },
 };

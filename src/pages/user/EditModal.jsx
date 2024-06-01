@@ -7,6 +7,7 @@ import RoleSelectTable from 'src/pages/role/RoleSelectTable';
 export default config({
     modal: {
         title: (props) => {
+           
             if (props?.record?.isDetail) return '查看用户';
 
             return props.isEdit ? '编辑用户' : '创建用户';
@@ -19,10 +20,11 @@ export default config({
     const [loading, setLoading] = useState(false);
     const [form] = Form.useForm();
     const isDetail = record?.isDetail;
+   
 
     const params = useMemo(() => {
-        console.log(record.id)
-        return { id: record.id };
+        console.log(record)
+        return { id: record?.id };
     }, [record]);
 
     // 编辑时，查询详情数据
@@ -30,7 +32,7 @@ export default config({
         mountFire: isEdit,
         setLoading,
         formatResult: (res) => {
-            console.log(res)
+           
             const[status,data]=res;
             if (!res) return;
             form.setFieldsValue(data);

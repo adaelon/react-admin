@@ -13,7 +13,7 @@ import {encryptPassword} from 'src/utils/encryption'; //密码加密的函数
 
 // 开发模式 默认填充的用户名密码
 const formValues = {
-    account: 'admin',
+    account: 'superadmin',
     password: 'Abc123456',
 };
 

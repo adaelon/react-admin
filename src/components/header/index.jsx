@@ -44,18 +44,10 @@ export default config({
             className={styles.root}
             size={16}
             style={{
-                paddingRight: IS_MOBILE ? 0 : 12,
+                paddingRight: 0,
             }}
         >
-            <Proxy className={styles.action} />
-
-            {IS_MOBILE ? null : (
-                <>
-                    <div className={styles.action}>
-                        <FullScreen />
-                    </div>
-                </>
-            )}
+            
 
             <Dropdown overlay={menu}>
                 <div className={styles.action}>
@@ -66,12 +58,10 @@ export default config({
                             {(name[0] || '').toUpperCase()}
                         </Avatar>
                     )}
-                    {IS_MOBILE ? null : (
-                        <>
-                            <span className={styles.userName}>{name}</span>
-                            <DownOutlined />
-                        </>
-                    )}
+                    <>
+                        <span className={styles.userName}>{name}</span>
+                        <DownOutlined />
+                    </>
                 </div>
             </Dropdown>
             <PasswordModal
