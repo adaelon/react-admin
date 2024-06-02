@@ -2,7 +2,7 @@ import { withRouter } from 'react-router-dom';
 import { createConfigHoc, modal as modalHoc, drawer as drawerHoc, getQuery, getLoginUser } from '@ra-lib/admin';
 import { ajaxHoc } from 'src/commons/ajax';
 import { connect as reduxConnect } from 'src/models';
-import { CONFIG_HOC, IS_MOBILE } from 'src/config';
+import { CONFIG_HOC } from 'src/config';
 import { layoutHoc } from 'src/components/layout';
 import React from 'react';
 
@@ -76,7 +76,7 @@ export default function configHoc(options = {}) {
     hoc.push(commonHoc(options));
 
     // 弹框高阶组件
-    if (modal) hoc.push(modalHoc(modal, IS_MOBILE));
+    if (modal) hoc.push(modalHoc(modal));
 
     // 抽屉高阶组件
     if (drawer) hoc.push(drawerHoc(drawer));

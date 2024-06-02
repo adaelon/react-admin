@@ -35,7 +35,6 @@ export default config({
     const { data: { dataSource, total } = {} } = props.ajax.useGet('/user/queryUsersByPage', params, [params], {
         setLoading,
         formatResult: (res) => {
-            console.log(res)
             const [status, data] = res;
             return {
                 dataSource: data.content || [],
@@ -58,7 +57,7 @@ export default config({
             key: 'operator',
             width: 250,
             render: (value, record) => {
-                console.log(record)
+              
                 const { id, name } = record;
                 const items = [
                     {

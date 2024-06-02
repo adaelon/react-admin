@@ -1,13 +1,9 @@
-import * as development from './config.development';
-import * as production from './config.production';
 import appPackage from '../../package.json';
 import {storage, getConfigValue, LAYOUT_TYPE} from '@ra-lib/admin';
 
-const allEnvConfig = {development, production};
+const allEnvConfig = {};
 const configEnv = process.env.REACT_APP_CONFIG_ENV || process.env.NODE_ENV;
 const envConfig = allEnvConfig[configEnv] || {};
-const isQianKun = window.__POWERED_BY_QIANKUN__;
-const isQianKunPublicPath = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__;
 const appName = appPackage.name;
 const isIframe = window.self !== window.top;
 
@@ -38,7 +34,7 @@ export const APP_NAME = c('APP_NAME', 'React Admin');
 export const SHOW_PROXY = NODE_ENV === 'development' || window.location.hostname === '172.16.143.44';
 export const AJAX_PREFIX = SHOW_PROXY
     ? window.localStorage.getItem('AJAX_PREFIX') || '/api'
-    : c('AJAX_PREFIX', isQianKun ? `${isQianKunPublicPath}api` : '/api');
+    : c('AJAX_PREFIX','/api');
 // ajax 超时时间
 export const AJAX_TIMEOUT = c('AJAX_TIMEOUT', 1000 * 60, Number);
 // 配置环境
@@ -48,7 +44,7 @@ export const CONFIG_HOC_STORAGE_KEY = 'CONFIG_HOC_STORAGE_KEY';
 // 是否有系统概念，顶级菜单将作为系统，角色有系统概念，默认添加子系统管理员角色
 export const WITH_SYSTEMS = c('WITH_SYSTEMS', false);
 // 页面路由前缀
-export const BASE_NAME = c('BASE_NAME', isQianKun ? `/${appName}` : '');
+export const BASE_NAME = c('BASE_NAME', '');
 // 是否使用hash路由
 export const HASH_ROUTER = c('HASH_ROUTER', false);
 // 静态文件前缀
@@ -62,20 +58,8 @@ export const IS_TEST = c('RUN_ENV', RUN_ENV === 'test', (value) => value === 'te
 // 是否是预览
 export const IS_PREVIEW = c('RUN_ENV', RUN_ENV === 'preview', (value) => value === 'preview');
 
-// 是否作为乾坤子项目，或者嵌入在iframe中
-export const IS_SUB = c('IS_SUB', isQianKun || isIframe);
-// 是否是手机布局
-export const IS_MOBILE = c('IS_MOBILE', window.document.body.clientWidth <= 575);
 
-const mobileConfig = IS_MOBILE
-    ? {
-          layoutType: LAYOUT_TYPE.SIDE_MENU,
-          header: true,
-          side: false,
-          tab: false,
-          headerTheme: 'dark',
-      }
-    : {};
+
 
 // config-hoc 高阶组件、布局默认配置
 export const CONFIG_HOC = {
@@ -121,11 +105,8 @@ export const CONFIG_HOC = {
     sideCollapsed: false,
     // 是否显示搜索菜单
     searchMenu: true,
-    // 是否显示我的收藏菜单
-    showCollectedMenus: false,
     // PageContent组件 fitHeight 时，计算高度所用到的额外高度值，如果页面显示统一的footer，这里设置footer的高度
     pageOtherHeight: 0, // 默认footer高度 26
 
-    ...mobileConfig,
     ...(storage.local.getItem(CONFIG_HOC_STORAGE_KEY) || {}),
 };

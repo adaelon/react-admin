@@ -8,7 +8,7 @@ import 'moment/locale/zh-cn'; // 解决antd日期相关组件国际化问题
 import { ComponentProvider, Loading, getLoginUser, setLoginUser /*queryParse,*/ } from '@ra-lib/admin';
 import { isNoAuthPage } from 'src/commons';
 import AppRouter from './router/AppRouter';
-import { APP_NAME, CONFIG_HOC, IS_MOBILE } from 'src/config';
+import { APP_NAME, CONFIG_HOC } from 'src/config';
 import { store } from 'src/models';
 import api from 'src/api';
 import theme from 'src/theme.less';
@@ -26,13 +26,7 @@ export default function App(props) {
     const { children } = props;
     const [loading, setLoading] = useState(true);
     const [menus, setMenus] = useState([]);
-    const [collectedMenus, setCollectedMenus] = useState(CONFIG_HOC.showCollectedMenus ? [] : null);
-    const handleMenuCollect = useCallback(async (menu, collected) => {
-        await api.saveCollectedMenu({ menuId: menu.id, collected });
-
-        const collectedMenus = await api.getCollectedMenus();
-        setCollectedMenus(collectedMenus);
-    }, []);
+   
 
     // 一些初始化工作
     useEffect(() => {
@@ -56,23 +50,11 @@ export default function App(props) {
                     return setLoading(false);
                 }
 
-                // 用户收藏菜单 使用then catch 防止报错后续接口阻断
-                // 用户收藏菜单
-                if (CONFIG_HOC.showCollectedMenus) {
-                    await api.getCollectedMenus().then(setCollectedMenus).catch(console.error);
-                }
+                
 
                 // 获取用户菜单
                 await api.getMenus().then(setMenus).catch(console.error);
 
-                // 获取用户权限
-                await api
-                    .getPermissions()
-                    .then((res) => {
-                        loginUser.permissions = res;
-                        setLoginUser(loginUser);
-                    })
-                    .catch(console.error);
             } finally {
                 setLoading(false);
             }
@@ -87,14 +69,13 @@ export default function App(props) {
                 <ComponentProvider
                     prefixCls={theme.raLibPrefix}
                     layoutPageOtherHeight={CONFIG_HOC.pageOtherHeight}
-                    isMobile={IS_MOBILE}
                 >
                     {loading ? (
                         <Loading progress={false} spin />
                     ) : children ? (
                         children
                     ) : (
-                        <AppRouter menus={menus} collectedMenus={collectedMenus} onMenuCollect={handleMenuCollect} />
+                        <AppRouter menus={menus} />
                     )}
                     
                 </ComponentProvider>

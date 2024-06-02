@@ -4,15 +4,7 @@ import handleError from 'src/commons/handle-error';
 import { storage, createStoreByModels } from '@ra-lib/admin';
 
 const result = createStoreByModels(models, {
-    // middlewares: [
-    //     thunk,
-    // ],
-    // enhancers: [], // 与 middlewares 进行compose运算的方法： const enhancer = compose(applyMiddleware(...middlewares), ...enhancers);
-    // reducers: {todos}, // 额外的reducers
-    // localStorage: window.localStorage,
-    // sessionStorage: window.sessionStorage,
-    // serialize: JSON.stringify,
-    // deserialize: JSON.parse,
+  
     localStorage: storage.local,
     sessionStorage: storage.session,
     serialize: (data) => data,

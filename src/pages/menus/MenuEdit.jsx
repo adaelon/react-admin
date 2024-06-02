@@ -41,7 +41,7 @@ export default config()(function MenuEdit(props) {
     useEffect(() => {
         form.resetFields();
         let initialValues = { ...selectedMenu, order: selectedMenu?.ord };
-        if (isAddTop) initialValues = { target: 'qiankun' };
+        if (isAddTop) initialValues = { target: 'menu' };
         if (isAddSub)
             initialValues = {
                 target: 'menu',
@@ -55,8 +55,8 @@ export default config()(function MenuEdit(props) {
     const handleSubmit = useCallback(
         async (values) => {
             if (loading) return;
+            //获取menu总数
             const menuCount = await fetchMenuCount().then((count) => {
-                //console.log('Final data:', data); // 这里可以访问到处理后的数据
                 return count;
             });
             const params = {
@@ -160,13 +160,13 @@ export default config()(function MenuEdit(props) {
                             type="select"
                             name="target"
                             options={menuTargetOptions}
-                            tooltip="指定类型之后，将以乾坤子项目或第三方网站方式打开"
+                            tooltip="应用菜单"
                             required
                             getPopupContainer={() => contentRef.current}
                         />
                         <FormItem {...layout} label="标题" name="title" required tooltip="菜单标题" />
                         <FormItem {...layout} type="number" label="排序" name="order" tooltip="降序，越大越靠前" />
-                        <FormItem {...layout} label="路径" name="path" tooltip="菜单路径或第三方网站地址" />
+                        <FormItem {...layout} label="路径" name="path" tooltip="菜单路径" />
                         <FormItem
                             {...layout}
                             type="switch"
@@ -178,44 +178,7 @@ export default config()(function MenuEdit(props) {
                         />
                         <FormItem shouldUpdate noStyle>
                             {({ getFieldValue }) => {
-                                const target = getFieldValue('target');
-                                if (target === 'qiankun') {
-                                    return (
-                                        <>
-                                            <FormItem
-                                                {...layout}
-                                                label="注册名称"
-                                                tooltip="要与子应用package.json中声明的name属性相同，唯一不可重复"
-                                                name="name"
-                                                rules={[
-                                                    { validator: checkName },
-                                                    {
-                                                        pattern: /^[0-9A-Za-z_-]+$/,
-                                                        message: '只允许英文大小写、_、-！',
-                                                    },
-                                                ]}
-                                                required
-                                            />
-                                            <FormItem
-                                                {...layout}
-                                                label="入口地址"
-                                                tooltip="http(s)开头的网址"
-                                                name="entry"
-                                                rules={[
-                                                    {
-                                                        validator: (rule, value) => {
-                                                            if (value && !value.startsWith('http'))
-                                                                return Promise.reject('请输入正确的入口地址！');
-                                                            return Promise.resolve();
-                                                        },
-                                                    },
-                                                ]}
-                                                noSpace
-                                                required
-                                            />
-                                        </>
-                                    );
-                                }
+
 
                                 return (
                                     <FormItem

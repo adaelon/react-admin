@@ -111,7 +111,7 @@ export default function Layout(props) {
         (item) => !item,
     );
 
-    if (IS_SUB) withoutLayout = true;
+    
 
     if (window.location.pathname !== '/layout/setting' && withoutLayout) {
         if (CONFIG_HOC.keepAlive) return <KeepPageAlive hashRouter={HASH_ROUTER} {...props} />;

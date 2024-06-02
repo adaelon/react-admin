@@ -19,10 +19,6 @@ export default {
     // 菜单目标
     menuTarget: [
         { value: 'menu', label: '应用菜单' },
-        { value: 'qiankun', label: '乾坤子应用' },
-        { value: 'iframe', label: 'iframe内嵌第三方' },
-        { value: '_self', label: '当前窗口打开第三方' },
-        { value: '_blank', label: '新开窗口打开第三方' },
     ],
     // 是否
     yesNo: [

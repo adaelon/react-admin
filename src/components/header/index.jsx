@@ -2,7 +2,6 @@ import {useState} from 'react';
 import {Space, Dropdown, Menu, Avatar} from 'antd';
 import {DownOutlined, LockOutlined, LogoutOutlined} from '@ant-design/icons';
 import {getColor, FullScreen} from '@ra-lib/admin';
-import {IS_MOBILE} from 'src/config';
 import config from 'src/commons/config-hoc';
 import {toLogin} from 'src/commons';
 import PasswordModal from './PasswordModal';

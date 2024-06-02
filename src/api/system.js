@@ -1,7 +1,6 @@
 import ajax from 'src/commons/ajax';
 import { getLoginUser, isLoginPage, formatMenus, getContainerId } from '@ra-lib/admin';
 import { isNoAuthPage } from 'src/commons';
-import { IS_SUB } from 'src/config';
 import {fetchAndCacheMenuData} from 'src/utils/menuData'; //密码加密的函数
 let returnData
 export default {
@@ -56,80 +55,5 @@ export default {
 
         return formatMenus(menus);
     },
-    /**
-     * 获取用户收藏菜单
-     * @returns {Promise<*>}
-     */
-    async getCollectedMenus() {
-        // 登录页面，不加载
-        if (isLoginPage()) return [];
-
-        // 作为子应用，不加载
-        if (IS_SUB) return [];
-
-        const loginUser = getLoginUser();
-        const data = await ajax.get('/authority/queryUserCollectedMenus', { userId: loginUser?.id });
-        // const data = [];
-
-        const menus = data.filter((item) => item.type === 1).map((item) => ({ ...item, isCollectedMenu: true }));
-
-        return formatMenus(menus);
-    },
-    /**
-     * 保存用户收藏菜单
-     * @param menuId
-     * @param collected
-     * @returns {Promise<void>}
-     */
-    async saveCollectedMenu({ menuId, collected }) {
-        await ajax.post('/authority/addUserCollectMenu', { userId: getLoginUser()?.id, menuId, collected });
-    },
-    /**
-     * 获取用户权限码
-     * @returns {Promise<*[string]>}
-     */
-    async getPermissions() {
-        const serverMenus = await this.getMenuData();
-        return serverMenus.filter((item) => item.type === 2).map((item) => item.code);
-    },
-    /**
-     * 获取子应用配置
-     * @returns {Promise<*[{title, name, entry}]>}
-     */
-    async getSubApps() {
-        // 从菜单数据中获取需要注册的乾坤子项目
-        const menuTreeData = (await this.getMenus()) || [];
-
-        // 传递给子应用的数据
-        const loginUser = getLoginUser();
-        const props = {
-            mainApp: {
-                loginUser: loginUser,
-                token: loginUser?.token,
-            },
-        };
-        let result = [];
-        const loop = (nodes) =>
-            nodes.forEach((node) => {
-                const { _target, children } = node;
-                if (_target === 'qiankun') {
-                    const { title, name, entry } = node;
-                    const container = `#${getContainerId(name)}`;
-                    const activeRule = `/${name}`;
-
-                    result.push({
-                        title,
-                        name,
-                        entry,
-                        container,
-                        activeRule,
-                        props,
-                    });
-                }
-                if (children?.length) loop(children);
-            });
-        loop(menuTreeData);
-
-        return result;
-    },
+    
 };
