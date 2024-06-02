@@ -6,9 +6,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { notification, Modal, message } from 'antd';
 import App from './App';
-import { setMainApp } from '@ra-lib/admin';
 import { initDB, executeSql,openDB } from './mock/web-sql';
-// 开启mock，这个判断不要修改，否则会把mock相关js打入生产包，很大
+// 开启mock
 if (process.env.NODE_ENV === 'development' && process.env.REACT_APP_MOCK) {
     require('./mock/index');
     console.warn('mock is enabled!!!');

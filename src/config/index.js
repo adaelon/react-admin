@@ -89,11 +89,11 @@ export const CONFIG_HOC = {
     // 页面头部是否显示
     pageHeader: false,
     // 头部主题
-    headerTheme: 'default', // dark
+    headerTheme: 'light', // dark
     // 侧边栏主题
-    sideTheme: 'dark', // dark
+    sideTheme: 'light', // dark
     // logo主题
-    logoTheme: 'dark',
+    logoTheme: 'light',
     // 侧边栏展开宽度
     sideMaxWidth: 210,
     // 头部显示菜单展开收起按钮

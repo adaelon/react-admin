@@ -2,7 +2,7 @@ import createTableSql, { initDataSql } from './init-sql';
 import appPackage from '../../../package.json';
 
 const packageName = appPackage.name;
-const dbName = `${packageName}-test-database`;
+const dbName = `${packageName}-database`;
 //const dbName = `${packageName}`;
 const dbVersion = 20; // 确保使用更高的版本号
 let db;

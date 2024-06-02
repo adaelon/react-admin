@@ -91,11 +91,11 @@ export const initRoleMenusSql = `
 
 export const initUsersSql = `
     INSERT INTO users (id, account, name, password, mobile, email, enabled)
-    VALUES (1111, 'superadmin', '超级管理员', '7828d7aa6efcf983b850025a6ceccad25905f5ecfa1758edbd1715d012747f2e', '18888888888', 'email@qq.com', 1);
+    VALUES (1111, 'superadmin', '超级管理员', '7828d7aa6efcf983b850025a6ceccad25905f5ecfa1758edbd1715d012747f2e', '19847595883', 'zjxlijo@163.com', 1);
     INSERT INTO users (id, account, name, password, mobile, email, enabled)
-    VALUES (1112, 'product', '商品管理员', '7828d7aa6efcf983b850025a6ceccad25905f5ecfa1758edbd1715d012747f2e', '18888888888', 'email@qq.com', 1);
+    VALUES (1112, 'product', '商品管理员', '7828d7aa6efcf983b850025a6ceccad25905f5ecfa1758edbd1715d012747f2e', '19847595883', 'zjxlijo@163.com', 1);
     INSERT INTO users (id, account, name, password, mobile, email, enabled)
-    VALUES (1113, 'order', '订单管理员', '7828d7aa6efcf983b850025a6ceccad25905f5ecfa1758edbd1715d012747f2e', '18888888888', 'email@qq.com', 1);
+    VALUES (1113, 'order', '订单管理员', '7828d7aa6efcf983b850025a6ceccad25905f5ecfa1758edbd1715d012747f2e', '19847595883', 'zjxlijo@163.com', 1);
 `;
 
 export const initUserRolesSql = `

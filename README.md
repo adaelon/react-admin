@@ -1,10 +1,10 @@
-# React Admin
+# 第三次作业-张佳讯-21301025
 
-基于[React17.x](https://reactjs.org)、[Ant Design4.x](https://ant.design/)的管理系统架构。
+基于React、Ant Design和ra-lib组件库的react信息管理系统。
 
-- [在线预览](https://sxfad.github.io/react-admin/build)
-- [查看文档](https://sxfad.github.io/react-admin/#/)
-- [组件库ra-lib文档](https://sxfad.github.io/ra-lib/)
+## 注意
+
++ 若第一次打开网页出现：![image-20240602153137711](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20240602153137711.png)请再刷新一次。
 
 ## 安装依赖
 
@@ -15,98 +15,124 @@
 yarn
 ```
 
-注：如果由于网络等原因安装不成功，可以尝试 `tyarn` 或 `cnpm` 或 `npm` 或 `yarn --registry https://registry.npm.taobao.org`
-
-设置环境变量，windows平台可以使用 [cross-env](https://github.com/kentcdodds/cross-env#)
-
-## 开发启动
-
-如果您是第一次使用，想快速预览效果，可以是用mock方式启动：`REACT_APP_MOCK=true yarn start`
+## 运行启动
 
 ```
-# 正常启动开发模式
-yarn start 
-
-# 自定义端口
-PORT=3001 yarn start
-
-# HTTPS 方式启动
-HTTPS=true yarn start
-
-# 开启本地mock
-REACT_APP_MOCK=true yarn start
+yarn dev 
 ```
 
-## 开发代理 & 测试代理
-
-修改`src/setupProxyConfig.json`，页面右上角头部有下拉，可以快速切换代理。
-
-```json
-[
-    {
-        "name": "张三",
-        "disabled": false,
-        "baseUrl": "/zhangsan",
-        "target": "http://127.0.0.1:8080"
-    },
-    {
-        "name": "测试环境",
-        "baseUrl": "/api",
-        "target": "http://127.0.0.1:8080"
-    }
-]
-```
-
-## 生产构建
+## 项目结构
 
 ```
-# 正常构建
-yarn build
-
-# 构建到指定目录
-BUILD_PATH=./dist yarn build
-
-# 指定配置环境
-REACT_APP_CONFIG_ENV=test yarn build
-
-# 打包大小分析
-yarn build:analyzer
-
-# 打包时间分析
-yarn build:time
+├── public              // 静态文件
+├── src                 // 项目源码目录
+│   ├── commons         // 项目公共文件目录，公共js
+│   ├── components      // 项目公共组件
+│   ├── config          // 项目配置
+│   ├── mock            // mock数据
+│   ├── models          // 数据管理，基于redux
+│   ├── pages           // 页面文件
+│   ├── router          // 路由相关
+│   ├── util            // 工具方法
+│   ├── App.jsx         // 根组件，初始化工作
+│   ├── App.less        // 全局样式
+│   ├── index.js        // 项目入口文件
+│   └── theme.less      // 主题变量
+├── craco.config.js     // webpack等构建相关配置
+├── package.json            
+├── README.md
+└── yarn.lock
 ```
 
-## 样式
+## 使用插件
 
-- 支持less及css
-- src下less进行css module处理，css不进行css module处理
-- css module 应用样式写法
-    ```jsx
-    import styles from './style.module.less';
-    
-    <div className={styles.root}>
-        <h1 className={styles.title}></h1>
-    </div>
-    ```
-- 项目中添加了[classnames](https://github.com/JedWatson/classnames)扩展，可以直接按照[classnames](https://github.com/JedWatson/classnames)方式在className中编写样式；
-    ```jsx
-        import styles from './style.module.less';
-    
-        const isActive = true;
-  
-        <div className={[styles.root, isActive && styles.active]}>
-            <h1 className={styles.title}></h1>
-        </div>
-    ```
-- 主题变量修改 theme.less [antd 样式变量](https://ant.design/docs/react/customize-theme-cn)
++ React
++ Antd
++ ra-lib
++ indexedDB
++ redux
 
-## 代码规范
+## indexedDB
 
-代码规范使用 [prettier](https://prettier.io/) [参考知乎这片文章](https://zhuanlan.zhihu.com/p/81764012)
+系统使用indexedDB进行数据存储，初次运行会自动创建如下数据库：
 
-团队多人开发，无论使用webstorm还是vscode，都使用prettier（配置文件：.prettierrc.js）进行代码格式化。
+![image-20240602164454949](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20240602164454949.png)
 
-IDE格式化快捷键可以配置成prettier
+详见src/mock
 
-git commit 时会根据prettier进行代码格式化，确保提交到仓库的代码都符合规范
+## 登录注册
+
+系统自动在初次启动时存放了如下三个user：
+
+![image-20240602164640571](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20240602164640571.png)
+
+密码加密存放。（三个user的密码都是：“Abc123456”）
+
+登录页面如下：
+
+![image-20240602164921193](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20240602164921193.png)
+
+密码进行了复杂度校验。
+
+注册页面：
+
+![image-20240602165125909](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20240602165125909.png)
+
+需要添加邮箱，并且进行了格式校验。
+
+## 菜单管理
+
+使用indexedDB中menu表进行存储。
+
+![image-20240602165347681](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20240602165347681.png)
+
+| 字段     | 必须 | 说明                         |
+| -------- | ---- | ---------------------------- |
+| id       | 是   | 需要唯一                     |
+| parentId | 否   | 用于关联父级                 |
+| path     | 是   | 菜单对应的路由地址           |
+| title    | 是   | 菜单标题                     |
+| icon     | 否   | 菜单图标配置                 |
+| target   | 否   | 配合url使用                  |
+| order    | 否   | 菜单排序，数值越大越靠前显示 |
+
+菜单管理页面：
+
+![image-20240602171526361](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20240602171526361.png)
+
+点击菜单列表中的菜单可以修改或删除，还可以添加顶级或子级。
+
+## 用户管理
+
+使用users表进行存储。
+
+页面：
+
+![image-20240602171548173](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20240602171548173.png)
+
+可以增删改查，并且分配角色。
+
+## 角色管理
+
+使用roles表进行存储。
+
+页面：
+
+![image-20240602171719812](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20240602171719812.png)
+
+点击编辑可以分配菜单权限。
+
+## 权限管理
+
+使用role_menus和user_roles表进行存储管理。
+
+页面：
+
+![image-20240602171748154](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20240602171748154.png)
+
+用户只能看到有权限看到的菜单
+
+例如：商品管理员的页面：
+
+![image-20240602171836834](C:\Users\Lenovo\AppData\Roaming\Typora\typora-user-images\image-20240602171836834.png)
 
