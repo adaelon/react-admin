@@ -6,7 +6,6 @@ import zhCN from 'antd/lib/locale-provider/zh_CN';
 import moment from 'moment';
 import 'moment/locale/zh-cn'; // 解决antd日期相关组件国际化问题
 import { ComponentProvider, Loading, getLoginUser, setLoginUser /*queryParse,*/ } from '@ra-lib/admin';
-import { Generator } from 'src/components';
 import { isNoAuthPage } from 'src/commons';
 import AppRouter from './router/AppRouter';
 import { APP_NAME, CONFIG_HOC, IS_MOBILE } from 'src/config';
@@ -97,7 +96,7 @@ export default function App(props) {
                     ) : (
                         <AppRouter menus={menus} collectedMenus={collectedMenus} onMenuCollect={handleMenuCollect} />
                     )}
-                    {process.env.NODE_ENV === 'development' ? <Generator /> : null}
+                    
                 </ComponentProvider>
             </ConfigProvider>
         </Provider>

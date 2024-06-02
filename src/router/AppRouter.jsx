@@ -1,5 +1,5 @@
 import { BrowserRouter, HashRouter, Route, Switch } from 'react-router-dom';
-import { LayoutError404 as Error404, AdminLayout as Layout, SubApp } from '../components';
+import {  AdminLayout as Layout } from '../components';
 import { BASE_NAME, CONFIG_HOC, HASH_ROUTER } from 'src/config';
 import routes from './routes';
 import { Footer } from 'src/components';
@@ -19,7 +19,7 @@ export default function AppRouter(props) {
                         <Layout
                             {...props}
                             routes={routes}
-                            render404={(props) => <Error404 {...props} />}
+                           
                             baseName={baseName}
                             menus={menus}
                             collectedMenus={collectedMenus}
@@ -35,10 +35,10 @@ export default function AppRouter(props) {
 
                         return <Route key={path} exact path={path} component={component} />;
                     })}
-                    <Route component={Error404} />
+                    
                 </Switch>
             ) : null}
-            <SubApp />
+         
             <Footer />
         </Router>
     );
