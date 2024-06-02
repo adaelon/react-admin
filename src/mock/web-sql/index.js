@@ -95,7 +95,7 @@ async function executeSql(sql, args = [], fullResult = false) {
         const transaction = db.transaction(tableName, 'readwrite');
         const store = transaction.objectStore(tableName);
         let request;
-
+        // 处理 SELECT 语句
         if (sql.startsWith('SELECT')) {
             request = store.getAll();
             request.onsuccess = (event) => {
@@ -155,6 +155,7 @@ async function executeSql(sql, args = [], fullResult = false) {
                 console.error('SQL execution error:', event.target.error);
                 reject(event.target.error);
             };
+        // 处理 INSERT 语句
         } else if (sql.startsWith('INSERT')) {
             const data = {};
             const columns = sql.match(/\((.*?)\)/)[1].split(',').map(col => col.trim());
@@ -169,6 +170,7 @@ async function executeSql(sql, args = [], fullResult = false) {
                 console.error('SQL execution error:', event.target.error);
                 reject(event.target.error);
             };
+        // 处理 UPDATE 语句
         } else if (sql.startsWith('UPDATE')) {
             const [updatePart, wherePart] = sql.split('WHERE');
             const setPart = updatePart.match(/SET\s+(.+?)\s*$/i)[1];
@@ -210,6 +212,7 @@ async function executeSql(sql, args = [], fullResult = false) {
             };
 
             return;
+        // 处理 DELETE 语句
         } else if (sql.startsWith('DELETE')) {
             const condition = sql.match(/WHERE\s+(.+?)(\s+ORDER BY|\s+LIMIT|\s*$)/i);
             if (condition) {
@@ -289,6 +292,7 @@ async function dropAllTables() {
         
     });
 }
+//initDB用
 async function executeSqlNoArgs(sql) {
     if (!db) {
         await openDB();

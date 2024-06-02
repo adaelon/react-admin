@@ -38,15 +38,7 @@ export default function App(props) {
             try {
                 let loginUser = getLoginUser();
                 if (!loginUser) {
-                    // 嵌入iframe等方式，没有经过登录页面，没有设置loginUser，需要请求loginUser
-                    // 发请求，获取loginUser
-                    // loginUser = await api.getLoginUser();
-                    //
-                    // const {token} = queryParse();
-                    // if (token) loginUser.token = token;
-                    //
-                    // setLoginUser(loginUser);
-
+                    
                     return setLoading(false);
                 }
 
@@ -61,7 +53,7 @@ export default function App(props) {
         })();
     }, []);
 
-    // 加载完成后渲染，确保能拿到permissions等数据
+    // 加载完成后渲染，确保能拿到menu数据
     return (
         <Provider store={store}>
             <ConfigProvider locale={zhCN} prefixCls={theme.antPrefix}>

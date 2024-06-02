@@ -75,7 +75,6 @@ function getOptions(options) {
 }
 
 // 如果其他组件有需求，可以通过layoutRef获取到Layout中一系列方法、数据，
-// 注意 layoutRef.current可能不存在
 export const layoutRef = { current: null };
 
 export default function Layout(props) {

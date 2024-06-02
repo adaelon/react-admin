@@ -133,20 +133,4 @@ export function isNoAuthPage(pathname) {
     return NO_AUTH_ROUTES.includes(pathname || window.location.pathname);
 }
 
-// table column 渲染时间
-export function renderTime(format = 'YYYY-MM-DD HH:mm:ss') {
-    return (value) => {
-        if (!value) return '-';
 
-        return moment(value).format(format);
-    };
-}
-
-// table column 渲染日期
-export function renderDate(format = 'YYYY-MM-DD') {
-    return (value) => {
-        if (!value) return '-';
-
-        return moment(value).format(format);
-    };
-}

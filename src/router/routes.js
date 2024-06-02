@@ -17,9 +17,7 @@ export const commonPaths = ['/', '/login','/register'];
  * 脚本抓取的路由在./src/pages/page-configs.js中
  * */
 export default [
-    // {path: '/', component: ()=> import('./path-to-component')},
-    { path: '/iframe_page_/:src', component: () => import('../components/iframe') },
-    { path: '/layout/setting', component: () => import('../components/layout/layout-setting/SettingPage') },
+    
 ]
     .concat(pageRoutes)
     .map((item) => {

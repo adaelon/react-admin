@@ -6,7 +6,7 @@ import {FormItem, setLoginUser} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import {useHistory} from 'react-router-dom';
 import {toHome} from 'src/commons';
-import {Logo, Proxy} from 'src/components';
+import {Logo} from 'src/components';
 import {IS_DEV, IS_TEST, IS_PREVIEW} from 'src/config';
 import s from './style.less';
 import {encryptPassword} from 'src/utils/encryption'; //密码加密的函数
@@ -92,7 +92,7 @@ export default config({
             <div className={s.logo}>
                 <Logo />
             </div>
-            <Proxy className={s.proxy} />
+           
             <div className={s.box}>
                 <Form form={form} name="login" onFinish={handleSubmit}>
                     <div className={formItemClass}>

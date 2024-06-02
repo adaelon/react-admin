@@ -1,5 +1,6 @@
 import ajax from 'src/commons/ajax';
-import { getLoginUser, isLoginPage, formatMenus, getContainerId } from '@ra-lib/admin';
+import { getLoginUser } from '@ra-lib/admin';
+//返回menu数据
 async function fetchAndCacheMenuData() {
     
 
@@ -34,7 +35,6 @@ async function fetchAndCacheMenuData() {
         
 
       
-
         console.log('Formatted data:', formattedData);
 
         return formattedData;
@@ -43,6 +43,7 @@ async function fetchAndCacheMenuData() {
         return [];
     }
 }
+//返回menu数量
 async function fetchMenuCount() {
     
 

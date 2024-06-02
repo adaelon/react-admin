@@ -4,7 +4,6 @@ import { PageContent, confirm, convertToTree, sort, findNextNode } from '@ra-lib
 import config from 'src/commons/config-hoc';
 import { WITH_SYSTEMS } from 'src/config';
 import MenuEdit from './MenuEdit';
-import ActionEdit from './ActionEdit';
 import theme from 'src/theme.less';
 import s from './style.less';
 import { ComponentProvider, Loading, getLoginUser, setLoginUser /*queryParse,*/ } from '@ra-lib/admin';
@@ -17,6 +16,7 @@ export default config({
     const [hasUnSaveAction, setHasUnSaveAction] = useState(false);
     console.log(getLoginUser().id)
     const { id } = getLoginUser();
+    //加载菜单
     const {
         loading,
         data: menus = [],
@@ -196,12 +196,7 @@ export default config({
                 onSubmit={handleMenuSubmit}
                 onValuesChange={() => setHasUnSaveMenu(true)}
             />
-            <ActionEdit
-                isAdd={isAdd}
-                selectedMenu={selectedMenu}
-                onValuesChange={() => setHasUnSaveAction(true)}
-                onSubmit={handleActionSubmit}
-            />
+            
         </PageContent>
     );
 });

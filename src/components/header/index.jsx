@@ -6,7 +6,6 @@ import config from 'src/commons/config-hoc';
 import {toLogin} from 'src/commons';
 import PasswordModal from './PasswordModal';
 import styles from './style.less';
-import {Proxy} from 'src/components';
 
 export default config({
     router: true,
@@ -50,13 +49,7 @@ export default config({
 
             <Dropdown overlay={menu}>
                 <div className={styles.action}>
-                    {avatar ? (
-                        <Avatar size="small" className={styles.avatar} src={avatar} />
-                    ) : (
-                        <Avatar size="small" className={styles.avatar} style={{backgroundColor: getColor(name)}}>
-                            {(name[0] || '').toUpperCase()}
-                        </Avatar>
-                    )}
+                   
                     <>
                         <span className={styles.userName}>{name}</span>
                         <DownOutlined />

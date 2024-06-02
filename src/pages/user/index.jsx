@@ -4,7 +4,6 @@ import { PageContent, QueryBar, FormItem, Table, Pagination, Operator, ToolBar }
 import config from 'src/commons/config-hoc';
 import options from 'src/options';
 import EditModal from './EditModal';
-import { CodeFilled } from '@ant-design/icons';
 
 export default config({
     path: '/users',
@@ -92,43 +91,10 @@ export default config({
         [deleteRecord, refreshSearch],
     );
 
-    const queryItem = {
-        style: { width: 200 },
-    };
 
     return (
         <PageContent loading={loading}>
-            <QueryBar>
-                <Form
-                    name="user"
-                    layout="inline"
-                    form={form}
-                    initialValues={{ position: '01' }}
-                    onFinish={(values) => setPageNum(1) || setConditions(values)}
-                >
-                    <FormItem {...queryItem} label="账号" name="account" />
-                    <FormItem {...queryItem} label="姓名" name="name" />
-                    <FormItem {...queryItem} label="手机号" name="mobile" />
-                    <FormItem
-                        {...queryItem}
-                        label="职位"
-                        name="position"
-                        allowClear
-                        options={[
-                            { value: '01', label: '前端开发' },
-                            { value: '02', label: '后端开发' },
-                        ]}
-                    />
-                    <FormItem>
-                        <Space>
-                            <Button type="primary" htmlType="submit">
-                                查询
-                            </Button>
-                            <Button onClick={() => form.resetFields()}>重置</Button>
-                        </Space>
-                    </FormItem>
-                </Form>
-            </QueryBar>
+            
             <ToolBar>
                 <Button type="primary" onClick={() => setRecord(null) || setVisible(true)}>
                     添加
