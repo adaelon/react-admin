@@ -1,10 +1,8 @@
 import {useState} from 'react';
 import {Space, Dropdown, Menu, Avatar} from 'antd';
 import {DownOutlined, LockOutlined, LogoutOutlined} from '@ant-design/icons';
-import {getColor, FullScreen} from '@ra-lib/admin';
 import config from 'src/commons/config-hoc';
 import {toLogin} from 'src/commons';
-import PasswordModal from './PasswordModal';
 import styles from './style.less';
 
 export default config({
@@ -25,10 +23,7 @@ export default config({
 
     const menu = (
         <Menu>
-            <Menu.Item key="modify-password" icon={<LockOutlined />} onClick={() => setPasswordVisible(true)}>
-                修改密码
-            </Menu.Item>
-            <Menu.Divider />
+            
             <Menu.Item key="logout" danger icon={<LogoutOutlined />} onClick={handleLogout}>
                 退出登录
             </Menu.Item>
@@ -56,11 +51,7 @@ export default config({
                     </>
                 </div>
             </Dropdown>
-            <PasswordModal
-                visible={passwordVisible}
-                onCancel={() => setPasswordVisible(false)}
-                onOk={() => setPasswordVisible(false)}
-            />
+            
         </Space>
     );
 });

@@ -59,6 +59,7 @@ export default config()(function MenuEdit(props) {
             const menuCount = await fetchMenuCount().then((count) => {
                 return count;
             });
+            //添加顶级使用
             const params = {
                 ...values,
                 id:menuCount+1,
@@ -66,23 +67,30 @@ export default config()(function MenuEdit(props) {
                 sort: values.order,
                 ord: values.order,
             };
-            console.log(params)
+            //update使用
+            const params2 = {
+                ...values,
+                id:menuCount,
+                type: 1, // 菜单
+                sort: values.order,
+                ord: values.order,
+            };
+            
 
+            //添加子级使用
+            const params3 = {
+                ...values,
+                id:menuCount+1,
+                parentId: parseInt(selectedMenu.id) ,
+                type: 1, // 菜单
+                sort: values.order,
+                ord: values.order,
+            };
+            console.log(params3)
             if (isAdd) {
-                if (isAddSub && addTabKey === '2') {
-                    let { menus, parentId } = values;
-
-                    try {
-                        menus = json5.parse(menus);
-                    } catch (e) {
-                        return Modal.error({
-                            title: '温馨提示',
-                            content: '批量添加的菜单数据有误，请修正后保存！',
-                        });
-                    }
-
-                    const params = { menus, parentId };
-                    const res = await branchSaveMenu(params);
+                if (isAddSub) {
+                    console.log("子级")
+                    const res = await saveMenu(params3);
                     const { id } = res;
                     onSubmit && onSubmit({ id, isAdd: true });
                 } else {
@@ -91,19 +99,10 @@ export default config()(function MenuEdit(props) {
                     const { id } = res;
                     onSubmit && onSubmit({ ...params, id, isAdd: true });
 
-                    // 有系统的概念，并且是添加顶级，创建一个系统管理员
-                    if (WITH_SYSTEMS && isAddTop) {
-                        await saveRole({
-                            systemId: id,
-                            name: '系统管理员',
-                            enabled: true,
-                            remark: '拥有当前子系统所有权限',
-                            type: 2,
-                        });
-                    }
+                   
                 }
             } else {
-                await updateMenu(params);
+                await updateMenu(params2);
                 onSubmit && onSubmit({ ...params, isUpdate: true });
             }
         },
@@ -147,7 +146,6 @@ export default config()(function MenuEdit(props) {
                 {isAddSub ? (
                     <Tabs activeKey={addTabKey} onChange={(key) => setAddTabKey(key)}>
                         <TabPane key="1" tab="单个添加" />
-                        <TabPane key="2" tab="批量添加" />
                     </Tabs>
                 ) : null}
                 <FormItem name="id" hidden />
@@ -205,15 +203,7 @@ export default config()(function MenuEdit(props) {
     {id: 'user', parentId: 'system', title: '用户管理', path: '/users', order: 900},
     {id: 'menus', parentId: 'system', title: '菜单管理', path: '/menus', order: 900},
     {id: 'role', parentId: 'system', title: '角色管理', path: '/roles', order: 900},
-    {
-        id: 'demo', parentId: 'system', title: '测试子应用',
-        target: 'qiankun',
-
-        name: 'react-admin',
-        entry: 'http://localhost:3000',
-
-        order: 850,
-    },
+   
 ]
                             `}
                     />

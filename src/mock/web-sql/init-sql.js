@@ -21,14 +21,6 @@ export default `
         updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
         CONSTRAINT menus_id_uindex UNIQUE (id)
     );
-    CREATE TABLE IF NOT EXISTS user_collect_menus (
-        id        INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId    INTEGER                             NOT NULL,
-        menuId    INTEGER                             NOT NULL,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        CONSTRAINT user_collect_menus_id_uindex UNIQUE (id)
-    );
     CREATE TABLE IF NOT EXISTS role_menus (
         id        INTEGER PRIMARY KEY AUTOINCREMENT,
         roleId    INTEGER                             NOT NULL,
@@ -89,6 +81,12 @@ export const initRoleMenusSql = `
     VALUES (4, 1, 4, '${now}', '${now}');
     INSERT INTO role_menus (id, roleId, menuId, createdAt, updatedAt)
     VALUES (5, 1, 5, '${now}', '${now}');
+    INSERT INTO role_menus (id, roleId, menuId, createdAt, updatedAt)
+    VALUES (6, 1, 6, '${now}', '${now}');
+    INSERT INTO role_menus (id, roleId, menuId, createdAt, updatedAt)
+    VALUES (7, 2, 5, '${now}', '${now}');
+    INSERT INTO role_menus (id, roleId, menuId, createdAt, updatedAt)
+    VALUES (8, 3, 6, '${now}', '${now}');
 `;
 
 export const initUsersSql = `
@@ -106,7 +104,7 @@ export const initUserRolesSql = `
     INSERT INTO user_roles (id, userId, roleId, createdAt, updatedAt)
     VALUES (2, 1112, 2, '${now}', '${now}');
     INSERT INTO user_roles (id, userId, roleId, createdAt, updatedAt)
-    VALUES (2, 1113, 3, '${now}', '${now}');
+    VALUES (3, 1113, 3, '${now}', '${now}');
 `;
 
 export const initMenuSql = `
@@ -119,15 +117,12 @@ export const initMenuSql = `
     INSERT INTO menus (id, enabled, parentId, title, icon, basePath, path, target, sort, type, code, name, entry, createdAt, updatedAt)
     VALUES (4, 1, 1, '菜单管理', NULL, NULL, '/menus', 'menu', 0, 1, NULL, NULL, NULL, '${now}', '${now}');
     INSERT INTO menus (id, enabled, parentId, title, icon, basePath, path, target, sort, type, code, name, entry, createdAt, updatedAt)
-    VALUES (5, 1, 2, '添加用户', NULL, NULL, NULL, NULL, 0, 2, 'ADD_USER', NULL, NULL, '${now}', '${now}');
+    VALUES (5, 1, NULL, '商品管理', NULL, NULL, '/product, 'menu', 0, 1, NULL, NULL, NULL, '${now}', '${now}');
     INSERT INTO menus (id, enabled, parentId, title, icon, basePath, path, target, sort, type, code, name, entry, createdAt, updatedAt)
-    VALUES (6, 1, 2, '删除用户', NULL, NULL, NULL, NULL, 0, 2, 'UPDATE_USER', NULL, NULL, '${now}', '${now}');
+    VALUES (6, 1, NULL, '订单管理', NULL, NULL, '/order, 'menu', 0, 1, NULL, NULL, NULL, '${now}', '${now}');
 `;
 
-export const initUserCollectMenusSql = `
-    INSERT INTO user_collect_menus (userId, menuId, createdAt, updatedAt)
-    VALUES (1, 2, '${now}', '${now}');
-`;
+
 
 export const initDataSql = {
     menus: initMenuSql,
@@ -135,5 +130,4 @@ export const initDataSql = {
     users: initUsersSql,
     role_menus: initRoleMenusSql,
     user_roles: initUserRolesSql,
-    user_collect_menus: initUserCollectMenusSql,
 };

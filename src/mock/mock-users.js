@@ -137,7 +137,7 @@ export default {
     // 保存用户
     'post /user/addUser': async (config) => {
         const { account, name, password, email, mobile, roleIds } = JSON.parse(config.data);
-        const args = [account, name, password, mobile, email, 1];
+        const args = [account, name, encryptPassword(password) , mobile, email, 1];
         const result = await executeSql(
             'INSERT INTO users (account, name, password, mobile, email, enabled) VALUES (?, ?, ?, ?, ?, ?)',
             args,
@@ -156,13 +156,14 @@ export default {
     // 修改用户
     'post /user/updateUserById': async (config) => {
         const { id, account, name, password, email, mobile, roleIds } = JSON.parse(config.data);
-        const args = [account, name, password, mobile, email, moment().format('YYYY-MM-DD HH:mm:ss'), parseInt(id)];
+        const args = [account, name, encryptPassword(password) , mobile, email, moment().format('YYYY-MM-DD HH:mm:ss'), parseInt(id)];
 
         await executeSql(
             'UPDATE users SET account=?, name=?, password=?, mobile=?, email=?, updatedAt=? WHERE id=?',
             args,
         );
-        //await executeSql('DELETE FROM user_roles WHERE userId=?', [id]);
+        await executeSql('DELETE FROM user_roles WHERE userId=?', [id]);
+        
 
         if (roleIds?.length) {
             for (let roleId of roleIds) {

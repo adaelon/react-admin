@@ -31,7 +31,7 @@ export function toHome() {
     // 上次是非登录页面，直接跳转首页
     if (isNoAuthPage(url.pathname)) lastHref = '/';
 
-    locationHref(lastHref);
+    locationHref('/');
 
     if (HASH_ROUTER) window.location.reload();
 }

@@ -1,7 +1,4 @@
-/**
- * 当前文件会由config-loader处理，编辑无效
- *
- * */
+
 export default [
     {
         path: '/users', // 路由地址

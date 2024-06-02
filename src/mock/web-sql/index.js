@@ -164,6 +164,8 @@ async function executeSql(sql, args = [], fullResult = false) {
             });
             request = store.add(data);
             request.onsuccess = (event) => {
+                const records = event.target.result;
+                console.log(records)
                 resolve(event.target.result);
             };
             request.onerror = (event) => {
@@ -220,16 +222,27 @@ async function executeSql(sql, args = [], fullResult = false) {
                 const request = store.getAll();
                 request.onsuccess = (event) => {
                     const records = event.target.result;
-                    console.log(records)
-                    if (records.length > 0) {
-                        const deleteRequest = store.delete(records[0].id);
-                        deleteRequest.onsuccess = (event) => {
-                            resolve(event.target.result);
-                        };
-                        deleteRequest.onerror = (event) => {
-                            console.error('SQL execution error:', event.target.error);
-                            reject(event.target.error);
-                        };
+                    console.log('All records:', records);
+                    // 过滤出满足条件的记录
+                    const recordsToDelete = records.filter(record => record[field] === args[0]);
+                    if (recordsToDelete.length > 0) {
+                        // 创建删除请求的Promise数组
+                        const deletePromises = recordsToDelete.map(record => {
+                            return new Promise((resolveDelete, rejectDelete) => {
+                                const deleteRequest = store.delete(record.id);
+                                deleteRequest.onsuccess = () => resolveDelete();
+                                deleteRequest.onerror = () => rejectDelete(deleteRequest.error);
+                            });
+                        });
+                        // 等待所有删除请求完成
+                        Promise.all(deletePromises)
+                            .then(() => {
+                                resolve(recordsToDelete);
+                            })
+                            .catch(error => {
+                                console.error('SQL execution error:', error);
+                                reject(error);
+                            });
                     } else {
                         resolve(null);
                     }
@@ -238,6 +251,9 @@ async function executeSql(sql, args = [], fullResult = false) {
                     console.error('SQL execution error:', event.target.error);
                     reject(event.target.error);
                 };
+            } else {
+                console.error('SQL execution error: Missing WHERE clause for DELETE statement');
+                reject('SQL execution error: Missing WHERE clause for DELETE statement');
             }
         } else {
             console.error('Unsupported SQL:', sql);

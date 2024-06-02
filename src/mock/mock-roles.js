@@ -13,7 +13,7 @@ export default {
                 from roles ${where}
                 `);
 
-            await addSystemName(list);
+           
 
             return [200, list];
         }
@@ -32,8 +32,6 @@ export default {
 
         const total = countResult.length || 0;
 
-        await addSystemName(list);
-
         return [
             200,
             {
@@ -46,7 +44,6 @@ export default {
         const list = await executeSql(
             `SELECT * from roles where enabled = ?`,[1]);
 
-        await addSystemName(list);
 
         return [200, list];
     },
@@ -114,20 +111,4 @@ export default {
     },
 };
 
-async function addSystemName(list) {
-    const systemIds = list.map((item) => item.systemId).filter((item) => !!item && item !== 'undefined');
-    if (systemIds && systemIds.length) {
-        const systems = await executeSql(
-            `SELECT *
-            from menus
-            where id in (${systemIds})
-        `);
-        list.forEach((item) => {
-            const {systemId} = item;
-            if (systemId) {
-                const system = systems.find((sys) => sys.id === systemId);
-                if (system) item.systemName = system.title;
-            }
-        });
-    }
-}
+

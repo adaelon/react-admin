@@ -28,8 +28,7 @@ export const NODE_ENV = process.env.NODE_ENV;
 // 实际运行环境，测试、预发布等环境时 NODE_ENV 也为 production，无法区分
 export const RUN_ENV = process.env.REACT_APP_RUN_ENV;
 // 应用名称
-export const APP_NAME = c('APP_NAME', 'React Admin');
-// ajax 请求前缀
+export const APP_NAME = c('APP_NAME', '第三次作业');
 // 开发环境 或者 测试环境使用 localStorage中存储的前缀
 export const SHOW_PROXY = NODE_ENV === 'development' || window.location.hostname === '172.16.143.44';
 export const AJAX_PREFIX = SHOW_PROXY
